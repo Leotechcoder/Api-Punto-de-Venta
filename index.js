@@ -4,7 +4,7 @@ import passport from "passport";
 import morgan from "morgan";
 import helmet from "helmet";
 import sessionMiddleware from "./src/shared/middleware/sessionMiddleware.js";
-import { PORT } from "./src/shared/config.js";
+import { PORT } from "./configuro.js";
 
 // Import routes
 // import { setupAfipRoutes } from "./src/afip/infrastructure/http/routes/afipRoutes.js";
