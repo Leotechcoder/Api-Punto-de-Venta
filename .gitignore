@@ -6,7 +6,6 @@ yarn-error.log
 # Entornos y configuración sensible
 .env
 src/shared/config.js
-src/afip/infrastructure/config/afipConfig.js
 # Archivos de logs y depuración
 logs/
 *.log

@@ -1,16 +1,15 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import passport from "passport"
 import { DatabaseUserRepository } from "./DatabaseUserRepository.js"
-import { CLIENT_ID_GOOGLE, SECRET_CLIENT_GOOGLE, CLIENT_AUTH_URL_GOOGLE } from "../../../shared/config.js"
 
 export class GoogleAuthService {
   static passportSetup() {
     passport.use(
       new GoogleStrategy(
         {
-          clientID: CLIENT_ID_GOOGLE,
-          clientSecret: SECRET_CLIENT_GOOGLE,
-          callbackURL: CLIENT_AUTH_URL_GOOGLE,
+          clientID: process.env.CLIENT_ID_GOOGLE,
+          clientSecret: process.env.SECRET_CLIENT_GOOGLE,
+          callbackURL: process.env.CLIENT_AUTH_URL_GOOGLE,
           scope: ["profile"],
         },
         (accessToken, refreshToken, profile, cb) => {

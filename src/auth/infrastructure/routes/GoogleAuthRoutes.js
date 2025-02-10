@@ -1,6 +1,5 @@
 import { Router } from "express"
 import passport from "passport"
-import { CLIENT_URL, LOGIN_URL } from "../../../shared/config.js"
 
 export const googleAuthRoutes = Router()
 
@@ -9,8 +8,8 @@ googleAuthRoutes.get("/auth/google", passport.authenticate("google", { scope: ["
 googleAuthRoutes.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: CLIENT_URL,
-    failureRedirect: LOGIN_URL,
+    successRedirect: process.env.CLIENT_URL,
+    failureRedirect: process.env.LOGIN_URL,
   }),
 )
 

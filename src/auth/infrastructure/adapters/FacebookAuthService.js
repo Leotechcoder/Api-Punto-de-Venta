@@ -1,16 +1,15 @@
 import { Strategy as FacebookStrategy } from "passport-facebook"
 import passport from "passport"
 import { DatabaseUserRepository } from "./DatabaseUserRepository.js"
-import { CLIENT_AUTH_URL_FACEBOOK, CLIENT_ID_FACEBOOK, SECRET_CLIENT_FACEBOOK } from "../../../shared/config.js"
 
 export class FacebookAuthService {
   static passportSetup() {
     passport.use(
       new FacebookStrategy(
         {
-          clientID: CLIENT_ID_FACEBOOK,
-          clientSecret: SECRET_CLIENT_FACEBOOK,
-          callbackURL: CLIENT_AUTH_URL_FACEBOOK,
+          clientID: process.env.CLIENT_ID_FACEBOOK,
+          clientSecret: process.env.SECRET_CLIENT_FACEBOOK,
+          callbackURL: process.env.CLIENT_AUTH_URL_FACEBOOK,
           scope: ["public_profile"],
         },
         (accessToken, refreshToken, profile, cb) => {

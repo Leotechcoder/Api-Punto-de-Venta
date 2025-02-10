@@ -1,14 +1,13 @@
 import { Router } from "express"
 import passport from "passport"
-import { CLIENT_URL, LOGIN_URL } from "../../../shared/config.js"
 
 export const localAuthRoutes = Router()
 
 localAuthRoutes.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: CLIENT_URL,
-    failureRedirect: LOGIN_URL,
+    successRedirect: process.env.CLIENT_URL,
+    failureRedirect: process.env.LOGIN_URL,
     failureFlash: true,
   }),
 )

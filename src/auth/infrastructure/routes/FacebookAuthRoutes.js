@@ -1,6 +1,5 @@
 import { Router } from "express"
 import passport from "passport"
-import { CLIENT_URL, LOGIN_URL } from "../../../shared/config.js"
 
 export const facebookAuthRoutes = Router()
 
@@ -8,9 +7,9 @@ facebookAuthRoutes.get("/auth/facebook", passport.authenticate("facebook", { sco
 
 facebookAuthRoutes.get(
   "/auth/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: LOGIN_URL }),
+  passport.authenticate("facebook", { failureRedirect: process.env.LOGIN_URL }),
   (req, res) => {
-    res.redirect(CLIENT_URL)
+    res.redirect(process.env.CLIENT_URL)
   },
 )
 

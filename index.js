@@ -4,7 +4,6 @@ import passport from "passport";
 import morgan from "morgan";
 import helmet from "helmet";
 import sessionMiddleware from "./src/shared/middleware/sessionMiddleware.js";
-import { PORT } from "./configuro.js";
 
 // Import routes
 // import { setupAfipRoutes } from "./src/afip/infrastructure/http/routes/afipRoutes.js";
@@ -63,6 +62,6 @@ app.use("/api", routerItems);
 app.use(errorHandler);
 
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`);
 });

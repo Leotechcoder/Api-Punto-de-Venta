@@ -1,7 +1,6 @@
 import session from "express-session"
 import connectPgSimple from "connect-pg-simple"
 import pool from "../infrastructure/postgresConnection.js"
-import { SECRET_KEY } from "../config.js"
 
 const PgSession = connectPgSimple(session)
 
@@ -11,7 +10,7 @@ const sessionMiddleware = session({
     tableName: "session_user",
     createTableIfMissing: true,
   }),
-  secret: SECRET_KEY,
+  secret: process.env.SECRET_KEY,
   resave: false,
   saveUninitialized: false,
   cookie: {
