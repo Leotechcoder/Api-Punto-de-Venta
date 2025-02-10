@@ -1,0 +1,124 @@
+src/
+├── auth/
+│   ├── domain/
+│   │   └── User.js
+│   ├── application/
+│   │   ├── UserRepository.js
+│   │   ├── AuthenticateUser.js
+│   │   ├── RegisterUser.js
+│   │   ├── ManualLogin.js
+│   │   ├── ManualRegister.js
+│   ├── infrastructure/
+│   │   ├── adapters/
+│   │   │   ├── GoogleAuthService.js
+│   │   │   ├── FacebookAuthService.js
+│   │   │   ├── PassportLocalAuthService.js
+│   │   │   ├── DatabaseUserRepository.js
+│   │   ├── middleware/
+│   │   │   └── sessionMiddleware.js
+│   │   ├── controller/
+│   │   │   ├── AuthController.js
+│   │   ├── routes/
+│   │   │   ├── AuthRoutes.js
+│   │   │   ├── GoogleAuthRoutes.js
+│   │   │   ├── FacebookAuthRoutes.js
+│   │   │   ├── LocalAuthRoutes.js
+├── users/
+│   ├── domain/
+│   │   ├── User.js
+│   │   ├── userSchema.js
+│   ├── application/
+│   │   ├── UserService.js
+│   │   ├── UserRepository.js
+│   ├── infrastructure/
+│   │   ├── adapters/
+│   │   │   ├── DatabaseUserRepository.js
+│   │   ├── controller/
+│   │   │   ├── UserController.js
+│   │   ├── routes/
+│   │   │   ├── UserRoutes.js
+├── products/
+│   ├── domain/
+│   │   ├── Product.js
+│   │   ├── productSchema.js
+│   ├── application/
+│   │   ├── ProductService.js
+│   │   ├── ProductRepository.js
+│   ├── infrastructure/
+│   │   ├── adapters/
+│   │   │   ├── DatabaseProductRepository.js
+│   │   ├── controller/
+│   │   │   ├── ProductController.js
+│   │   ├── routes/
+│   │   │   ├── ProductRoutes.js
+├── orders/
+│   ├── domain/
+│   │   ├── Order.js
+│   │   ├── orderSchema.js
+│   ├── application/
+│   │   ├── OrderService.js
+│   │   ├── OrderRepository.js
+│   ├── infrastructure/
+│   │   ├── adapters/
+│   │   │   ├── DatabaseOrderRepository.js
+│   │   ├── controller/
+│   │   │   ├── OrderController.js
+│   │   ├── routes/
+│   │   │   ├── OrderRoutes.js
+├── items/
+│   ├── domain/
+│   │   ├── Item.js
+│   │   ├── itemsSchema.js
+│   ├── application/
+│   │   ├── ItemService.js
+│   │   ├── ItemRepository.js
+│   ├── infrastructure/
+│   │   ├── adapters/
+│   │   │   ├── DatabaseItemRepository.js
+│   │   ├── controller/
+│   │   │   ├── ItemController.js
+│   │   ├── routes/
+│   │   │   ├── ItemRoutes.js
+├── afip/
+│   ├── domain/
+│   │   ├── entities/
+│   │   │   └── Invoice.js
+│   │   ├── valueObjects/
+│   │   │   └── InvoiceNumber.js
+│   ├── application/
+│   │   ├── ports/
+│   │   │   ├── repositories/
+│   │   │   │   └── InvoiceRepository.js
+│   │   │   └── services/
+│   │   │       ├── AfipService.js
+│   │   │       ├── AuthService.js
+│   │   ├── useCases/
+│   │   │   ├── CreateInvoice.js
+│   │   │   ├── GetLastVoucher.js
+│   ├── infrastructure/
+│   │   ├── config/
+│   │   │   ├── afipConfig.js
+│   │   ├── repositories/
+│   │   │   ├── PostgresInvoiceRepository.js
+│   │   ├── services/
+│   │   │   ├── AfipServiceImpl.js
+│   │   │   ├── AuthServiceImpl.js
+│   │   ├── webServices/
+│   │   │   ├── soapClient.js
+│   │   ├── http/
+│   │   │   ├── controllers/
+│   │   │   │   ├── AfipController.js
+│   │   │   ├── routes/
+│   │   │   │   ├── afipRoutes.js
+│   │   │   ├── middlewares/
+│   │   │   │   ├── errorHandler.js
+├── shared/
+│   ├── infrastructure/
+│   │   ├── postgresConnection.js
+│   ├── middleware/
+│   │   ├── AuthMiddleware.js
+│   │   ├── sessionMiddleware.js
+│   ├── access.js
+│   ├── AccessControl.js
+│   ├── config.js
+├── index.js

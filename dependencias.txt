@@ -1,0 +1,1 @@
+##npm install express cors morgan helmet passport passport-facebook passport-google-oauth20 pg connect-pg-simple express-session sequelize nodemon standard bcrypt zod

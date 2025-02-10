@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Entornos y configuración sensible
+.env
+src/shared/config.js
+src/afip/infrastructure/config/afipConfig.js
+# Archivos de logs y depuración
+logs/
+*.log
+logs/*.log
+
+# Caché y dependencias temporales
+.cache/
+dist/
+build/
+tmp/
+.DS_Store
+
+# Bases de datos locales y archivos de sesión
+*.sqlite3
+*.db
+
+# Archivos de configuración del sistema
+.idea/
+.vscode/
+*.swp
+
+# Claves y secretos
+config/*.json
