@@ -24,7 +24,7 @@ export class DatabaseUserRepository extends UserRepository {
         const insertQuery = `INSERT INTO public.users (${columns.join(", ")}) VALUES (${placeholders})`;
 
         const insertResult = await pool.query(insertQuery, values);
-
+        console.log(insertResult)
         if(insertResult.rowCount === 1){
           const user  = await pool.query('SELECT * FROM public.users WHERE id_ = $1', [thirdPartyId]);
           console.log(user);
