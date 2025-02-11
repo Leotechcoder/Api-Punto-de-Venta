@@ -7,7 +7,8 @@ export class DatabaseUserRepository extends UserRepository {
       // Buscar usuario por thirdPartyId
       const userResult = await pool.query("SELECT * FROM public.users WHERE id_ = $1", [thirdPartyId]);
       const user = userResult.rows[0];
-
+      console.log(user);
+      
       if (!user) {
         // Crear un nuevo usuario si no existe
         const newUser = {
@@ -21,12 +22,14 @@ export class DatabaseUserRepository extends UserRepository {
         const values = [newUser.id, newUser.username, newUser.email, newUser.registration_date];
 
         const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
-        const insertQuery = `INSERT INTO public.users (${columns.join(", ")}) VALUES (${placeholders}) RETURNING *`;
+        const insertQuery = `INSERT INTO public.users (${columns.join(", ")}) VALUES (${placeholders})`;
 
         const insertResult = await pool.query(insertQuery, values);
 
-        if (insertResult.rowCount === 1) {
-          return insertResult.rows[0];
+        if(insertResult.rowCount === 1){
+          const user  = await pool.query('SELECT * FROM public.users WHERE id_ = $1', [thirdPartyId]);
+          console.log(user);
+          return user.rows[0];
         }
       }
 
