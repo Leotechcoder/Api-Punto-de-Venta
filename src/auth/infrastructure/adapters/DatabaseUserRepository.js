@@ -7,7 +7,6 @@ export class DatabaseUserRepository extends UserRepository {
       // Buscar usuario por thirdPartyId
       const userResult = await pool.query("SELECT * FROM public.users WHERE id_ = $1", [thirdPartyId]);
       const user = userResult.rows[0];
-      console.log(user);
       
       if (!user) {
         // Crear un nuevo usuario si no existe
