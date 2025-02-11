@@ -1,6 +1,11 @@
 import { Router } from "express"
 import passport from "passport"
+import dotenv from 'dotenv';
+if(process.env.NODE_ENV !== 'production'){
+  dotenv.config(); 
+}
 
+// Local authentication routes
 export const localAuthRoutes = Router()
 
 localAuthRoutes.post(

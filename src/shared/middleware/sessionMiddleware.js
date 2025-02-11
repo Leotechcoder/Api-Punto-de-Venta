@@ -1,6 +1,10 @@
 import session from "express-session"
 import connectPgSimple from "connect-pg-simple"
 import pool from "../infrastructure/postgresConnection.js"
+import dotenv from 'dotenv';
+if(process.env.NODE_ENV !== 'production'){
+  dotenv.config(); 
+}
 
 const PgSession = connectPgSimple(session)
 

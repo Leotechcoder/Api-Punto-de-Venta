@@ -1,6 +1,10 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import passport from "passport"
 import { DatabaseUserRepository } from "./DatabaseUserRepository.js"
+import dotenv from 'dotenv';
+if(process.env.NODE_ENV !== 'production'){
+  dotenv.config(); 
+}
 
 export class GoogleAuthService {
   static passportSetup() {

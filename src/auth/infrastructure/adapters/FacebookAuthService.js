@@ -1,6 +1,10 @@
 import { Strategy as FacebookStrategy } from "passport-facebook"
 import passport from "passport"
 import { DatabaseUserRepository } from "./DatabaseUserRepository.js"
+import dotenv from 'dotenv';
+if(process.env.NODE_ENV !== 'production'){
+  dotenv.config(); 
+}
 
 export class FacebookAuthService {
   static passportSetup() {

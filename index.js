@@ -4,6 +4,7 @@ import passport from "passport";
 import morgan from "morgan";
 import helmet from "helmet";
 import sessionMiddleware from "./src/shared/middleware/sessionMiddleware.js";
+import dotenv from 'dotenv';
 
 // Import routes
 // import { setupAfipRoutes } from "./src/afip/infrastructure/http/routes/afipRoutes.js";
@@ -25,6 +26,9 @@ import { ACCEPTED_ORIGINS } from "./src/shared/access.js";
 
 const app = express();
 
+if(process.env.NODE_ENV !== 'production'){
+  dotenv.config(); 
+}
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
