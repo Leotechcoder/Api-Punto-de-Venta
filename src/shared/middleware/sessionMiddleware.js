@@ -21,6 +21,7 @@ const sessionMiddleware = session({
     maxAge: 1000 * 60 * 60 * 24 * 7,
     sameSite: "strict",
     httpOnly: true,
+    secure: process.env.NODE_ENV, // Solo en producción
   },
 })
 
