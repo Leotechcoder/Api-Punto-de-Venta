@@ -2,6 +2,7 @@ import session from "express-session"
 import connectPgSimple from "connect-pg-simple"
 import pool from "../infrastructure/postgresConnection.js"
 import dotenv from 'dotenv';
+
 if(process.env.NODE_ENV !== 'production'){
   dotenv.config(); 
 }
@@ -19,7 +20,7 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7,
-    sameSite: "none",
+    sameSite: process.env.NODE_ENV === 'production'? 'none' : 'strict',
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production'? true : false // Solo en producción
   },
