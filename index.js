@@ -44,10 +44,10 @@ const corsObject = {
   preflightContinue: true, //Esto permite que el navegador permita la petición CORS
   optionsSuccessStatus: 200  //Si preflightContinue es true, esta cabecera se establece en 200
 }
+app.use(cors(corsObject));//debe ir antes de iniciar session
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors(corsObject));
 
 GoogleAuthService.passportSetup();
 FacebookAuthService.passportSetup();
