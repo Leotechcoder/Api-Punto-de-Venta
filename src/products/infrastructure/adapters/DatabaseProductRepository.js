@@ -30,7 +30,7 @@ export class DatabaseProductRepository extends ProductRepository {
     try {
       const id = idGenerator("Products");
       const createdAt = new Date().toISOString();
-      const newProduct = { id_, ...productData, created_at: createdAt, updated_at: createdAt };
+      const newProduct = { id_: id, ...productData, created_at: createdAt, available: true };
       const columns = Object.keys(newProduct).join(", ");
       const placeholders = Object.keys(newProduct).map((_, i) => `$${i + 1}`).join(", ");
       const values = Object.values(newProduct);

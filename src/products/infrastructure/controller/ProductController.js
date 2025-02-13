@@ -35,7 +35,7 @@ export class ProductController {
   static async create(req, res) {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
-      const result = validateProduct(req.body);
+      const result = validateProductUpdate(req.body);
       if (!result.success) return res.status(400).json({ message: "Error al crear el producto", errors: result.error.errors });
       const newProduct = await productService.createProduct(result.data);
       return res.status(201).json(newProduct);
