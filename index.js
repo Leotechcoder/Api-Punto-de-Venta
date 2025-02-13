@@ -24,6 +24,15 @@ import { GoogleAuthService } from "./src/auth/infrastructure/adapters/GoogleAuth
 import { FacebookAuthService } from "./src/auth/infrastructure/adapters/FacebookAuthService.js";
 import { ACCEPTED_ORIGINS } from "./src/shared/access.js";
 
+// Capturar errores globales para debug
+process.on('uncaughtException', (err) => {
+  console.error('Unhandled Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const app = express();
 
 app.set("trust proxy", 1); // Necesario para que Express detecte HTTPS detrás de un proxy
