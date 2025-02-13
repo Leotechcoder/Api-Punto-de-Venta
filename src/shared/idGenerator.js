@@ -3,5 +3,3 @@ export const idGenerator = (tabla) => {
     return ( tabla.slice(0,2) + '-'+ fecha.replace(/\//g, '') + '-' + Math.floor(Math.random() * 1000) );
     
 }
-
-console.log(idGenerator("User")); 

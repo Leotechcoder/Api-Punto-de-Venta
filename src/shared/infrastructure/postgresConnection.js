@@ -4,7 +4,7 @@ if(process.env.NODE_ENV !== 'production'){
   dotenv.config(); 
 }
 
-console.log(process.env.DB_USER)
+console.log( 'Se conecto a la base de datos: ' + process.env.DB_NAME, process.env.DB_HOST, process.env.DB_PORT )
 
 const { Pool } = pg;
 

@@ -8,7 +8,7 @@ export class DatabaseUserRepository extends UserRepository {
   async getAll() {
     try {
       const result = await pool.query("SELECT * FROM public.users");
-      return result.rows.map((row) => new User(row.id_, row.username, row.email, row.phone, row.address, row.avatar));
+      return result.rows.map((row) => new User(row.id_, row.username, row.email, row.phone, row.address));
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       throw new Error("Error al obtener usuarios");
