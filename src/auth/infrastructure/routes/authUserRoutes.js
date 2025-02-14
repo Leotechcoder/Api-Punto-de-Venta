@@ -5,7 +5,6 @@ export const authUserRoutes = Router();
 
 authUserRoutes.get("/auth/authenticate", async (req, res) => {
   const authenticated = AuthMiddleware.isAuthenticated(req)
-        console.log(req.session)
         if(!authenticated) {
             return res.status(401).json({
                 username: 'invitado',
