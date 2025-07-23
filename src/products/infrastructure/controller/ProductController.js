@@ -12,6 +12,8 @@ export class ProductController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const products = await productService.getAllProducts();
+      console.log(`📦 Productos obtenidos: ${products}`);
+      
       if (!products.length) return res.status(404).json({ message: "No se encontraron productos" });
       return res.status(200).json(products);
     } catch (error) {
