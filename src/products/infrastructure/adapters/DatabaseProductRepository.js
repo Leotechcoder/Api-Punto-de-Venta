@@ -10,10 +10,20 @@ export class DatabaseProductRepository extends ProductRepository {
       const result = await pool.query("SELECT * FROM public.products");
       console.log(`El backend devuelve: ${result.rowCount} productos obtenidos desde el objeto ${result.rows}`);
 
-      return result.rows.map((row) => new Product(...Object.values(row)));
+      return result.rows.map((row) => new Product( 
+        row.id_,
+        row.name_,
+        row.description,
+        row.price,
+        row.imageUrl,
+        row.category,
+        row.stock,
+        row.available,
+        row.created_at,
+        row.updated_at));
     } catch (error) {
-      console.error("❌ Error en getAll:", error);
-      throw new Error("Error al obtener productos");
+        console.error("❌ Error en getAll:", error);
+        throw new Error("Error al obtener productos");
     }
   }
 
