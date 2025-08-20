@@ -10,7 +10,7 @@ routerItems.get("/items", ItemController.getAll);
 routerItems.get("/items/:id", ItemController.getById);
 
 // POST - Crear un item
-routerItems.post("/items", ItemController.create);
+routerItems.post("/items", ItemController.createOrder);
 
 // PATCH - Actualizar un item
 routerItems.patch("/items/:id", ItemController.updatePartial);

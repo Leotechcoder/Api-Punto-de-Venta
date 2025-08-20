@@ -41,13 +41,11 @@ export class DatabaseOrderRepository extends OrderRepository {
   }
 
   async create(orderData) {
-    const id = idGenerator("Orders");
     const createdAt = new Date().toISOString(); // Mejor usar formato ISO 8601
     const newOrder = {
-      id_: id,
       ...orderData,
-      created_at: createdAt,
-      updated_at: createdAt,
+      created_at: orderData.orderDate,
+      updated_at: '',
     };
 
     const columns = Object.keys(newOrder).join(", ");

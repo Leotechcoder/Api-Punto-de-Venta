@@ -1,13 +1,11 @@
 
 export class Item {
-    constructor(id, name, description, price, quantity, category, createdAt, updatedAt) {
-        this.id = id;
-        this.name = name;
+    constructor(id_, product_id, product_name, description, unit_price, quantity) {
+        this.id_ = id_;
+        this.product_id = product_id;
+        this.product_name = product_name;
         this.description = description;
-        this.price = price;
+        this.unit_price = unit_price;
         this.quantity = quantity;
-        this.category = category;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

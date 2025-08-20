@@ -3,13 +3,16 @@ import z from "zod";
 
 // Esquema de validación para un ítem
 export const schemaItems = z.object({
-  id: z.string().uuid(), // Asumiendo que el ID es un UUID
-  order_id: z.string().uuid(), // Asumiendo que el order_id es un UUID
-  product_id: z.string().uuid(), // Asumiendo que el product_id es un UUID
-  product_name: z.string().min(1, "El nombre del producto es requerido"),
-  description: z.string().min(1, "La descripción es requerida"),
-  quantity: z.number().positive("La cantidad debe ser un número positivo"),
-  unit_price: z.number().positive("El precio unitario debe ser un número positivo"),
+  user_id: z.string(),
+  user_name: z.string(),
+  items: z.array(z.object({
+    product_id: z.string(),
+    product_name: z.string(),
+    description: z.string(),
+    unit_price: z.string(),
+    quantity: z.string()
+  })),
+  total_amount: z.number()
 });
 
 // Validación de un ítem completo

@@ -13,18 +13,42 @@ export class DatabaseItemRepository extends ItemRepository {
     return result.rows[0] || null
   }
 
-  async create(items) {
-    const insertedItems = []
-    for (const item of items) {
-      const id = idGenerator("Items")
-      const { order_id, product_id, product_name, description, quantity, unit_price } = item
-      const result = await pool.query(
-        "INSERT INTO public.items (id, order_id, product_id, product_name, description, quantity, unit_price) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-        [id, order_id, product_id, product_name, description, quantity, unit_price],
-      )
-      insertedItems.push(result.rows[0])
+  async create(validateData) {
+    const { user_id, user_name, total_amount, items } = validateData;
+    console.log('Datos de la orden: ', { user_id, user_name, total_amount, items });
+
+    const client = await pool.connect();
+
+    //Genero los datos para la orden
+    const orderId = idGenerator('Orders');
+    const status = 'pending';
+    const created_at = new Date();
+
+      // 1️⃣ Insertar la orden
+      const orderResult = await client.query(
+        `INSERT INTO public.orders (id_, user_id, user_name, total_amount, status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_`,
+        [orderId, user_id, user_name, total_amount, status, created_at]
+      );
+
+      const order_id = orderResult.rows[0].id_;
+      
+      // 2️⃣ Insertar los items en OrderItems
+      const insertItemsPromises = items.map(item => {
+        const itemId = idGenerator('Items');
+        return client.query(
+          `INSERT INTO public.order_items (id_, order_id, product_id, product_name, description, quantity, unit_price)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [itemId, order_id, item.product_id, item.product_name, item.description, item.quantity, item.unit_price]
+        )
+      })
+      
+      const itemResult = await Promise.all(insertItemsPromises);
+      console.log('Datos de la tabla OrderItems: ', itemResult);
+    if(itemResult.Result.rowCount === 1){
+      return order_id
     }
-    return insertedItems
+      return null
   }
 
   async update(id, itemData) {

@@ -29,19 +29,39 @@ export class ItemController {
     }
   }
 
-  static async create(req, res) {
-    const validation = validateArray(req.body);
-    if (!validation.success) {
-      return res.status(400).json({ error: validation.error });
-    }
+  // static async create(req, res) {
+  //   const validation = validateArray(req.body);
+  //   if (!validation.success) {
+  //     return res.status(400).json({ error: validation.error });
+  //   }
 
-    try {
-      const newItems = await itemService.createItem(validation.data);
-      return res.status(201).json(newItems);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
+  //   try {
+  //     const newItems = await itemService.createItem(validation.data);
+  //     return res.status(201).json(newItems);
+  //   } catch (error) {
+  //     return res.status(500).json({ error: error.message });
+  //   }
+  // }
+
+  static async createOrder(req, res) {
+  
+  console.log('Objeto json para crear una orden',req.body);
+  
+  const validation = validatePartialItems(req.body);
+  
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error });
   }
+  
+  try {
+    const createdOrdersItems = await itemService.createItem(validation.data);
+    console.log(createdOrdersItems);
+    return res.status(200).json(`Orden creada numero: ${createdOrdersItems}`);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+    
+  };
 
   static async updatePartial(req, res) {
     const { id } = req.params;
