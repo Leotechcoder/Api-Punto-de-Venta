@@ -12,7 +12,16 @@ export const schemaItems = z.object({
     unit_price: z.string(),
     quantity: z.string()
   })),
-  total_amount: z.number()
+  total_amount: z.number(),
+  paymentInfo: z.object({
+    methods: z.array(z.string()),
+    amounts: z.object({
+      efectivo: z.string(),
+      credito: z.string(),
+      debito: z.string()
+    }),
+  }),
+  deliveryType: z.string()
 });
 
 // Validación de un ítem completo
