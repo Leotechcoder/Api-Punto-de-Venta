@@ -8,7 +8,7 @@ export class DatabaseUserRepository extends UserRepository {
   async getAll() {
     try {
       const result = await pool.query("SELECT * FROM public.users");
-      return result.rows.map((row) => new User(row.id_, row.username, row.email, row.phone, row.address));
+      return result.rows.map((row) => new User(row.id_, row.username, row.email, row.phone, row.address, row.avatar, row.registration_date));
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       throw new Error("Error al obtener usuarios");
@@ -30,9 +30,10 @@ export class DatabaseUserRepository extends UserRepository {
     try {
       const id = idGenerator("Users");
       const { username, email, phone, address, avatar } = userData;
+      const registration_date = new Date().toISOString()
       const result = await pool.query(
-        "INSERT INTO public.users (id_, username, email, phone, address, avatar) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-        [id, username, email, phone, address, avatar]
+        "INSERT INTO public.users (id_, username, email, phone, address, avatar, registration_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        [id, username, email, phone, address, avatar, registration_date]
       );
       return new User(...Object.values(result.rows[0]));
     } catch (error) {

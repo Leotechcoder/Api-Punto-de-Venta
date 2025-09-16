@@ -4,10 +4,11 @@ export class UserSchema {
   static createSchema = z.object({
     username: z.string(),
     password_: z.string(),
-    email: z.string().email(),
+    email: z.string(),
     phone: z.string(),
     address: z.string(),
-    avatar: z.string().url(),
+    avatar: z.string(),
+    registration_date: z.string(),
   });
 
   static updateSchema = z.object({
