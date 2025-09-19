@@ -103,7 +103,7 @@ export class DatabaseOrderRepository extends OrderRepository {
   }
 
   async delete(id) {
-    await pool.query("DELETE FROM items WHERE order_id = $1", [id]); // Eliminar ítems asociados
+    await pool.query("DELETE FROM order_items WHERE order_id = $1", [id]); // Eliminar ítems asociados
     const result = await pool.query("DELETE FROM public.orders WHERE id_ = $1", [id]);
 
     return result.rowCount === 1; // Devuelve true si se eliminó, false si no

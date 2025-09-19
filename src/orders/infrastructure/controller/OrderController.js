@@ -75,7 +75,7 @@ export class OrderController {
 
       if (!deleted) return res.status(404).json({ message: "Orden no encontrada" });
 
-      return res.status(204).send(); // Código 204 para eliminación exitosa sin contenido
+      return res.status(204); // Código 204 para eliminación exitosa sin contenido
     } catch (error) {
       next(error);
     }
