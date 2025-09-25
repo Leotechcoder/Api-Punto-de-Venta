@@ -1,33 +1,33 @@
-import { AuthenticateUser } from "../../application/AuthenticateUser.js"
-import { RegisterUser } from "../../application/RegisterUser.js"
+import { AuthService } from "../adapters/LocalAuthService.js"
 
 export class AuthController {
-  constructor(authService, userRepository) {
-    this.authenticateUser = new AuthenticateUser(authService)
-    this.registerUser = new RegisterUser(userRepository)
+  constructor() {
+    this.authService = new AuthService()
   }
 
   async login(req, res) {
     try {
-      const user = await this.authenticateUser.execute(req.body)
-      req.login(user, (err) => {
-        if (err) {
-          return res.status(500).json({ message: "Error logging in" })
-        }
-        return res.json({ user })
-      })
+      const user = this.authService.validateUser(req.body.email, req.body.password)
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" })
+      }
+
+      // Aquí puedes generar un token JWT o iniciar una sesión
+      return res.status(200).json({ message: "Login successful", user })
     } catch (error) {
-      res.status(401).json({ message: "Invalid credentials" })
+      return res.status(500).json({ message: "Internal server error", error })
     }
   }
 
   async register(req, res) {
     try {
-      const user = await this.registerUser.execute(req.body)
-      res.status(201).json({ user })
+      const user = await this.authService.createUser(req);
+      if (!user) {
+        return res.status(400).json({ message: "User creation failed" });
+      }
+      return res.status(201).json({ message: "User created successfully", user });
     } catch (error) {
-      res.status(400).json({ message: "Error registering user" })
+        return res.status(500).json({message:"Internal server error", error})
     }
-  }
+    }
 }
-

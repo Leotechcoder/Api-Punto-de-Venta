@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 // Import routes
 // import { setupAfipRoutes } from "./src/afip/infrastructure/http/routes/afipRoutes.js";
 // import { authRoutes } from "./src/auth/infrastructure/routes/AuthRoutes.js";
-// import { localAuthRoutes } from "./src/auth/infrastructure/routes/LocalAuthRoutes.js";
+import { localAuthRoutes } from "./src/auth/infrastructure/routes/LocalAuthRoutes.js";
 import { googleAuthRoutes } from "./src/auth/infrastructure/routes/GoogleAuthRoutes.js";
 import { authUserRoutes } from "./src/auth/infrastructure/routes/authUserRoutes.js";
 import { facebookAuthRoutes } from "./src/auth/infrastructure/routes/FacebookAuthRoutes.js";
@@ -22,7 +22,9 @@ import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHa
 // Setup authentication strategies
 import { GoogleAuthService } from "./src/auth/infrastructure/adapters/GoogleAuthService.js";
 import { FacebookAuthService } from "./src/auth/infrastructure/adapters/FacebookAuthService.js";
+import { PassportLocalAuthService } from "./src/auth/infrastructure/adapters/PassportLocalAuthService.js";
 import { ACCEPTED_ORIGINS } from "./src/shared/access.js";
+import { DatabaseUserRepository } from "./src/auth/infrastructure/adapters/DatabaseUserRepository.js";
 
 // Capturar errores globales para debug
 process.on('uncaughtException', (err) => {
@@ -60,11 +62,16 @@ app.use(passport.session());
 
 GoogleAuthService.passportSetup();
 FacebookAuthService.passportSetup();
+//Local
+const dataBaseUserRepository = new DatabaseUserRepository();
+PassportLocalAuthService.setup(dataBaseUserRepository);
+
+// Protected routes
 
 app.use("/api", cors(corsObject), authUserRoutes)
 // Routes
 // app.use("/api/auth", authRoutes);
-// app.use("/api/auth/local", localAuthRoutes);
+app.use("/api/auth/local", localAuthRoutes);
 // app.use("/api/afip", setupAfipRoutes());
 app.use("/api", googleAuthRoutes);
 app.use("/api", facebookAuthRoutes);
