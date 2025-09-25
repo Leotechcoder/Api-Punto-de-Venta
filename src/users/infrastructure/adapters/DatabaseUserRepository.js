@@ -1,5 +1,6 @@
 
 import pool from "../../../shared/infrastructure/postgresConnection.js";
+import bcrypt from "bcrypt"
 import { UserRepository } from "../../application/UserRepository.js";
 import { User } from "../../domain/User.js";
 import { idGenerator } from "../../../shared/idGenerator.js";
