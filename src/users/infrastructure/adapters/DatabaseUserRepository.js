@@ -29,11 +29,15 @@ export class DatabaseUserRepository extends UserRepository {
   async create(userData) {
     try {
       const id = idGenerator("Users");
-      const { username, email, phone, address, avatar } = userData;
+      const { username, email, phone, address, password_ } = userData;
+
+      // Hashear la contraseña
+      const hashedPassword = await bcrypt.hash(password_, 10)
+
       const registration_date = new Date().toISOString()
       const result = await pool.query(
-        "INSERT INTO public.users (id_, username, email, phone, address, avatar, registration_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-        [id, username, email, phone, address, avatar, registration_date]
+        "INSERT INTO public.users (id_, username, email, phone, address, password_, registration_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        [id, username, email, phone, address, hashedPassword, registration_date]
       );
       return new User(...Object.values(result.rows[0]));
     } catch (error) {
