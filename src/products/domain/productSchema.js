@@ -2,13 +2,12 @@ import z from "zod"
 
 const productSchema = z.object({
   name_: z.string(),
-  description: z.string(),
   price: z.number(),
-  image_url: z.string(),
   category: z.string(),
   stock: z.number(),
+  image_url: z.string().optional(),
   available: z.boolean(),
-  state: z.string(),
+  description: z.string().optional(),
 })
 
 const productSchemaUpdate = productSchema.partial()

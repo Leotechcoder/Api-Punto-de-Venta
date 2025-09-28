@@ -96,6 +96,7 @@ export class DatabaseUserRepository extends UserRepository {
           newUser.registration_date,
         ]
       );
+      console.log(result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error("❌ Error en createUser:", error);

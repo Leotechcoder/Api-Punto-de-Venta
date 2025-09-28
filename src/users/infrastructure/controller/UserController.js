@@ -12,7 +12,7 @@ export class UserController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const users = await userService.getAllUsers();
-      return res.status(200).json(users);
+      return res.status(200).json({users, message: "OK"});
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -37,7 +37,7 @@ export class UserController {
       const result = UserSchema.validatePartialUser(req.body);
       if (!result.success) return res.status(400).json({ error: "Invalid user data", details: result.error.errors });
       const newUser = await userService.createUser(result.data);
-      return res.status(201).json(newUser);
+      return res.status(201).json({ user: newUser , message: "Created" });
     } catch (error) {
       console.error("❌ Error en create:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -63,7 +63,7 @@ export class UserController {
       if (!AccessControl.handleRequest(req, res)) return;
       const deleted = await userService.deleteUser(req.params.id);
       if (!deleted) return res.status(404).json({ error: "User not found" });
-      return res.status(204).send();
+      return res.status(200).json({message: "Deleted"});
     } catch (error) {
       console.error("❌ Error en delete:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });

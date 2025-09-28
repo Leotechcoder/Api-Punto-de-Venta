@@ -25,7 +25,7 @@ localAuthRoutes.post("/login", (req, res, next) => {
       if (err) return next(err)
 
       // Devuelve el usuario y flag de login
-      return res.json({ user, message: "Logged in successfully" })
+      return res.json({ user, message: "Logged" })
     })
   })(req, res, next)
 })
@@ -55,7 +55,7 @@ localAuthRoutes.post("/register", async (req, res) => {
       password: hashedPassword,
     })
 
-    return res.status(201).json({ user: newUser })
+    return res.status(201).json({ user: newUser, message: "Registered" })
   } catch (error) {
     console.error("❌ Error en /register:", error)
     return res.status(500).json({ message: "Error registrando usuario" })
@@ -67,6 +67,6 @@ localAuthRoutes.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err)
 
-    return res.json({ message: "Logged out successfully" })
+    return res.json({ message: "LoggedOut" })
   })
 })
