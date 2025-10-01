@@ -1,7 +1,7 @@
 export class Product {
-    constructor(id_, name_, price, category, stock, image_url, description, available, created_at, updated_at) {
-      this.id_ = id_
-      this.name_ = name_
+    constructor(id, name, price, category, stock, image_url, description, available, created_at, updated_at) {
+      this.id_ = id
+      this.name_ = name
       this.price = price
       this.category = category
       this.stock = stock

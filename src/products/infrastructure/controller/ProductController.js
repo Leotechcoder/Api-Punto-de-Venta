@@ -17,7 +17,7 @@ export class ProductController {
       }
 
       return res.status(200).json({
-        data: products,
+        products: products,
         message: "Operación completada",
       });
     } catch (error) {

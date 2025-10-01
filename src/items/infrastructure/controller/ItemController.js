@@ -10,7 +10,8 @@ export class ItemController {
   static async getAll(req, res) {
     try {
       const items = await itemService.getAllItems();
-      return res.status(200).json(items);
+      const arrayPlano = Object.values(items).filter(value => typeof value === 'object');
+      return res.status(200).json({items: arrayPlano, message: "OK"});
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

@@ -7,8 +7,7 @@ export class UserSchema {
     email: z.string(),
     phone: z.string(),
     address: z.string(),
-    avatar: z.string(),
-    registration_date: z.string(),
+    avatar: z.string().optional(),
   });
 
   static updateSchema = z.object({

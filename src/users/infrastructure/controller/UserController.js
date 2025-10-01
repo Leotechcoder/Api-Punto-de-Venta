@@ -12,7 +12,7 @@ export class UserController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const users = await userService.getAllUsers();
-      return res.status(200).json({users, message: "OK"});
+      return res.status(200).json({data:users, message: "OK"});
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -23,8 +23,8 @@ export class UserController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const user = await userService.getUserById(req.params.id);
-      if (!user) return res.status(404).json({ error: "User not found" });
-      return res.status(200).json(user);
+      if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(200).json({data:user, message: "Usuario encontrado"});
     } catch (error) {
       console.error("❌ Error en getById:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -35,9 +35,9 @@ export class UserController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const result = UserSchema.validatePartialUser(req.body);
-      if (!result.success) return res.status(400).json({ error: "Invalid user data", details: result.error.errors });
+      if (!result.success) return res.status(400).json({ error: "Datos de usuario invalidos", details: result.error.errors });
       const newUser = await userService.createUser(result.data);
-      return res.status(201).json({ user: newUser , message: "Created" });
+      return res.status(201).json({ data: newUser , message: "Usuario creado exitosamente" });
     } catch (error) {
       console.error("❌ Error en create:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -50,8 +50,11 @@ export class UserController {
       const result = UserSchema.validateUserUpdate(req.body);
       if (!result.success) return res.status(400).json({ error: "Invalid user data", details: result.error.errors });
       const updatedUser = await userService.updateUser(req.params.id, result.data);
-      if (!updatedUser) return res.status(404).json({ error: "User not found" });
-      return res.status(200).json(updatedUser);
+      if (!updatedUser) return res.status(404).json({ error: "Usuario no encontrado" });
+      const usuarioActualizado = { ...updatedUser }
+      console.log("✅ Usuario actualizado:", usuarioActualizado);
+      
+      return res.status(200).json({data: usuarioActualizado, message: "Usuario actualizado exitosamente"});
     } catch (error) {
       console.error("❌ Error en updatePartial:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });
@@ -62,8 +65,8 @@ export class UserController {
     try {
       if (!AccessControl.handleRequest(req, res)) return;
       const deleted = await userService.deleteUser(req.params.id);
-      if (!deleted) return res.status(404).json({ error: "User not found" });
-      return res.status(200).json({message: "Deleted"});
+      if (!deleted) return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(200).json({message: "Usuario eliminado exitosamente"});
     } catch (error) {
       console.error("❌ Error en delete:", error);
       return res.status(500).json({ error: "Internal server error", details: error.message });

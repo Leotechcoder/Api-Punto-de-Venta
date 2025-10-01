@@ -2,14 +2,13 @@
 import pool from "../../../shared/infrastructure/postgresConnection.js";
 import bcrypt from "bcrypt"
 import { UserRepository } from "../../application/UserRepository.js";
-import { User } from "../../domain/User.js";
 import { idGenerator } from "../../../shared/idGenerator.js";
 
 export class DatabaseUserRepository extends UserRepository {
   async getAll() {
     try {
       const result = await pool.query("SELECT * FROM public.users");
-      return result.rows.map((row) => new User(row.id_, row.username, row.email, row.phone, row.address, row.avatar, row.registration_date));
+      return result.rows;
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       throw new Error("Error al obtener usuarios");
@@ -20,7 +19,7 @@ export class DatabaseUserRepository extends UserRepository {
     try {
       const result = await pool.query("SELECT * FROM public.users WHERE id_ = $1", [id]);
       if (result.rows.length === 0) return null;
-      return new User(...Object.values(result.rows[0]));
+      return result.rows[0];
     } catch (error) {
       console.error("❌ Error en getById:", error);
       throw new Error("Error al obtener usuario");
@@ -40,7 +39,7 @@ export class DatabaseUserRepository extends UserRepository {
         "INSERT INTO public.users (id_, username, email, phone, address, password_, registration_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
         [id, username, email, phone, address, hashedPassword, registration_date]
       );
-      return new User(...Object.values(result.rows[0]));
+      return result.rows[0];
     } catch (error) {
       console.error("❌ Error en create:", error);
       throw new Error("Error al crear usuario");
@@ -50,12 +49,15 @@ export class DatabaseUserRepository extends UserRepository {
   async update(id, userData) {
     try {
       const { username, phone, address } = userData;
+      const update_profile = new Date().toISOString();
       const result = await pool.query(
-        "UPDATE public.users SET username = $1, phone = $2, address = $3 WHERE id_ = $4 RETURNING *",
-        [username, phone, address, id]
+        "UPDATE public.users SET username = $1, phone = $2, address = $3, update_profile = $4 WHERE id_ = $5 RETURNING *",
+        [username, phone, address, update_profile, id]
       );
       if (result.rows.length === 0) return null;
-      return new User(...Object.values(result.rows[0]));
+      
+      return result.rows[0];
+      
     } catch (error) {
       console.error("❌ Error en update:", error);
       throw new Error("Error al actualizar usuario");

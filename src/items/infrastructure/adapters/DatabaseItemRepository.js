@@ -4,7 +4,7 @@ import { idGenerator } from "../../../shared/idGenerator.js";
 
 export class DatabaseItemRepository extends ItemRepository {
   async getAll() {
-    const result = await pool.query("SELECT * FROM public.order_items");
+    const result = await pool.query("SELECT * FROM public.order_items");    
     return result.rows;
   }
 

@@ -1,32 +1,16 @@
 import pool from "../../../shared/infrastructure/postgresConnection.js";
 import { ProductRepository } from "../../application/ProductRepository.js";
-import { Product } from "../../domain/Product.js";
-import { idGenerator } from "../../../shared/idGenerator.js";
 
 export class DatabaseProductRepository extends ProductRepository {
   async getAll() {
     try {
+      
       const result = await pool.query("SELECT * FROM public.products");
-      console.log(
-        `El backend devuelve: ${result.rowCount} productos obtenidos desde el objeto`,
-        result.rows
-      );
+      console.log(`El backend devuelve: ${result.rowCount} productos obtenidos desde el objeto`);
+      console.log(result.rows);
+      
+      return result.rows;
 
-      return result.rows.map(
-        (row) =>
-          new Product(
-            row.id_,
-            row.name_,
-            row.price,
-            row.category,
-            row.stock,
-            row.image_url,
-            row.description,
-            row.available,
-            row.created_at,
-            row.updated_at
-          )
-      );
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       throw new Error("Error al obtener productos");
@@ -40,22 +24,15 @@ export class DatabaseProductRepository extends ProductRepository {
         [id]
       );
       if (result.rows.length === 0) return null;
-      return new Product(...Object.values(result.rows[0]));
+      return result.rows[0];
     } catch (error) {
       console.error("❌ Error en getById:", error);
       throw new Error("Error al obtener producto");
     }
   }
 
-  async create(productData) {
+  async create(newProduct) {
     try {
-      const id = idGenerator("Products");
-      const createdAt = new Date().toISOString();
-      const newProduct = {
-        id_: id,
-        ...productData,
-        created_at: createdAt,
-      };
       const columns = Object.keys(newProduct).join(", ");
       const placeholders = Object.keys(newProduct)
         .map((_, i) => `$${i + 1}`)
@@ -66,18 +43,15 @@ export class DatabaseProductRepository extends ProductRepository {
         `INSERT INTO public.products (${columns}) VALUES (${placeholders}) RETURNING *`,
         values
       );
-      return new Product(...Object.values(result.rows[0]));
+      return result.rows[0];
     } catch (error) {
       console.error("❌ Error en create:", error);
       throw new Error("Error al crear producto");
     }
   }
 
-  async update(id, productData) {
+  async update(updateProduct) {
     try {
-      const updatedAt = new Date().toISOString();
-      const updateProduct = { ...productData, updated_at: updatedAt };
-
       // Generamos la cláusula SET y los valores
       const setClause = Object.keys(updateProduct)
         .map((key, index) => `${key} = $${index + 1}`)
@@ -87,14 +61,12 @@ export class DatabaseProductRepository extends ProductRepository {
       // El ID va al final para el WHERE
       const result = await pool.query(
         `UPDATE public.products SET ${setClause} WHERE id_ = $${values.length + 1} RETURNING *`,
-        [...values, id]
+        [...values, updateProduct.id_]
       );
-console.log(`Producto con ID ${id} actualizado:`, result.rows[0]);
-
+      
       if (result.rows.length === 0) return null;
-      const updatedProduct = new Product(...Object.values(result.rows[0]));
-      console.log(`Producto con ID ${id} actualizado:`, updatedProduct);
-      return updatedProduct;
+      console.log(`Producto con ID ${updateProduct.id_} actualizado:`, result.rows[0]);
+      return result.rows[0]
     } catch (error) {
       console.error("❌ Error en update:", error);
       throw new Error("Error al actualizar producto");

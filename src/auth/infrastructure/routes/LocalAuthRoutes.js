@@ -63,7 +63,7 @@ localAuthRoutes.post("/register", async (req, res) => {
 })
 
 // Logout
-localAuthRoutes.get("/logout", (req, res, next) => {
+localAuthRoutes.post("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err)
 

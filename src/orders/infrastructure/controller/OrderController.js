@@ -11,7 +11,10 @@ export class OrderController {
     try {
       AccessControl.handleRequest(req, res);
       const orders = await orderService.getAllOrders();
-      return res.status(200).json(orders);
+      const ordersArray = orders.map(order => ({...order}));
+      console.log(ordersArray);
+
+      return res.status(200).json({orders: ordersArray, message: "OK"});
     } catch (error) {
       next(error);
     }
