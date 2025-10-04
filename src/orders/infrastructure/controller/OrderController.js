@@ -11,10 +11,7 @@ export class OrderController {
     try {
       AccessControl.handleRequest(req, res);
       const orders = await orderService.getAllOrders();
-      const ordersArray = orders.map(order => ({...order}));
-      console.log(ordersArray);
-
-      return res.status(200).json({orders: ordersArray, message: "OK"});
+      return res.status(200).json({ orders, message: "OK" });
     } catch (error) {
       next(error);
     }
@@ -23,9 +20,11 @@ export class OrderController {
   static async getById(req, res, next) {
     try {
       AccessControl.handleRequest(req, res);
-      const orderId = req.params.id;
-      const order = await orderService.getOrderById(orderId);
-      if (!order) return res.status(404).json({ message: "Orden no encontrada" });
+      const { id } = req.params;
+      const order = await orderService.getOrderById(id);
+
+      if (!order)
+        return res.status(404).json({ message: "Orden no encontrada" });
 
       return res.status(200).json(order);
     } catch (error) {
@@ -35,16 +34,20 @@ export class OrderController {
 
   static async create(req, res, next) {
     try {
-      // Primero validar los datos antes de validar permisos
       const result = validateOrder(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Error en los datos de la orden", errors: result.error.errors });
-      }
+      if (!result.success)
+        return res.status(400).json({
+          message: "Error en los datos de la orden",
+          errors: result.error.errors,
+        });
 
       AccessControl.handleRequest(req, res);
       const newOrder = await orderService.createOrder(result.data);
 
-      return res.status(201).json(newOrder);
+      return res.status(201).json({
+        message: "Orden creada exitosamente",
+        order: newOrder,
+      });
     } catch (error) {
       next(error);
     }
@@ -52,19 +55,25 @@ export class OrderController {
 
   static async updatePartial(req, res, next) {
     try {
-      const orderId = req.params.id;
+      const { id } = req.params;
       const result = validateOrderUpdate(req.body);
 
-      if (!result.success) {
-        return res.status(400).json({ message: "Datos de actualización inválidos", errors: result.error.errors });
-      }
+      if (!result.success)
+        return res.status(400).json({
+          message: "Datos de actualización inválidos",
+          errors: result.error.errors,
+        });
 
       AccessControl.handleRequest(req, res);
-      const updatedOrder = await orderService.updateOrder(orderId, result.data);
+      const updatedOrder = await orderService.updateOrder(id, result.data);
 
-      if (!updatedOrder) return res.status(404).json({ message: "Orden no encontrada" });
+      if (!updatedOrder)
+        return res.status(404).json({ message: "Orden no encontrada" });
 
-      return res.status(200).json(updatedOrder);
+      return res.status(200).json({
+        message: "Orden actualizada exitosamente",
+        order: updatedOrder,
+      });
     } catch (error) {
       next(error);
     }
@@ -73,12 +82,14 @@ export class OrderController {
   static async delete(req, res, next) {
     try {
       AccessControl.handleRequest(req, res);
-      const orderId = req.params.id;
-      const deleted = await orderService.deleteOrder(orderId);
+      const { id } = req.params;
+      const deleted = await orderService.deleteOrder(id);
 
-      if (!deleted) return res.status(404).json({ message: "Orden no encontrada" });
+      if (!deleted)
+        return res.status(404).json({ message: "Orden no encontrada" });
 
-      return res.status(204); // Código 204 para eliminación exitosa sin contenido
+      // 204 No Content debe cerrar el response
+      return res.status(204).send();
     } catch (error) {
       next(error);
     }

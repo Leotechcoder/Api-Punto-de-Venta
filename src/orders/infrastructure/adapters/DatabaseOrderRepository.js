@@ -6,46 +6,21 @@ import { idGenerator } from "../../../shared/idGenerator.js";
 export class DatabaseOrderRepository extends OrderRepository {
   async getAll() {
     const result = await pool.query("SELECT * FROM public.orders");
-    if (result.rows.length === 0) return []; // Si no hay órdenes, devuelve un array vacío
-
-    return result.rows.map(
-      (row) =>
-        new Order(
-          row.id_,
-          row.user_id,
-          row.user_name,
-          row.total_amount,
-          row.status,
-          row.items_id,
-          row.created_at,
-          row.updated_at
-        )
-    );
+    return result.rows; // Devolvemos datos crudos, el servicio los transforma
   }
 
   async getById(id) {
     const result = await pool.query("SELECT * FROM public.orders WHERE id_ = $1", [id]);
-    if (result.rows.length === 0) return null; // Si no encuentra la orden, devuelve null
-
-    const row = result.rows[0];
-    return new Order(
-      row.id_,
-      row.user_id,
-      row.user_name,
-      row.total_amount,
-      row.status,
-      row.items_id,
-      row.created_at,
-      row.updated_at
-    );
+    return result.rows[0] || null;
   }
 
   async create(orderData) {
-    const createdAt = new Date().toISOString(); // Mejor usar formato ISO 8601
+    const createdAt = new Date().toISOString();
     const newOrder = {
+      id_: idGenerator(),
       ...orderData,
-      created_at: orderData.orderDate,
-      updated_at: '',
+      created_at: createdAt,
+      updated_at: null,
     };
 
     const columns = Object.keys(newOrder).join(", ");
@@ -59,19 +34,7 @@ export class DatabaseOrderRepository extends OrderRepository {
       values
     );
 
-    if (result.rows.length === 0) return null; // En caso de que la inserción falle
-
-    const row = result.rows[0];
-    return new Order(
-      row.id_,
-      row.user_id,
-      row.user_name,
-      row.total_amount,
-      row.status,
-      row.items_id,
-      row.created_at,
-      row.updated_at
-    );
+    return result.rows[0] || null;
   }
 
   async update(id, orderData) {
@@ -86,26 +49,17 @@ export class DatabaseOrderRepository extends OrderRepository {
       .join(", ");
     const values = [id, ...Object.values(updateOrder)];
 
-    const result = await pool.query(`UPDATE public.orders SET ${setClause} WHERE id_ = $1 RETURNING *`, values);
-    if (result.rows.length === 0) return null; // Si no se encontró la orden, devuelve null
-
-    const row = result.rows[0];
-    return new Order(
-      row.id_,
-      row.user_id,
-      row.user_name,
-      row.total_amount,
-      row.status,
-      row.items_id,
-      row.created_at,
-      row.updated_at
+    const result = await pool.query(
+      `UPDATE public.orders SET ${setClause} WHERE id_ = $1 RETURNING *`,
+      values
     );
+
+    return result.rows[0] || null;
   }
 
   async delete(id) {
-    await pool.query("DELETE FROM order_items WHERE order_id = $1", [id]); // Eliminar ítems asociados
+    await pool.query("DELETE FROM order_items WHERE order_id = $1", [id]);
     const result = await pool.query("DELETE FROM public.orders WHERE id_ = $1", [id]);
-
-    return result.rowCount === 1; // Devuelve true si se eliminó, false si no
+    return result.rowCount === 1;
   }
 }
