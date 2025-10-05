@@ -38,10 +38,8 @@ export class DatabaseOrderRepository extends OrderRepository {
   }
 
   async update(id, orderData) {
-    const updatedAt = new Date().toISOString();
     const updateOrder = {
       ...orderData,
-      updated_at: updatedAt,
     };
 
     const setClause = Object.keys(updateOrder)
