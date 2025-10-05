@@ -75,7 +75,7 @@ export class Order {
       status: this.status,
       items_id: this.itemsId,
       created_at: this.createdAt,
-      updated_at: this.updatedAt,
+      update_at: this.updatedAt,
     };
   }
 }
