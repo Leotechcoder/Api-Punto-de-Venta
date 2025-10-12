@@ -1,21 +1,21 @@
 export class OrderRepository {
-    async getAll() {
+    async getAll(client) {
       throw new Error("Method not implemented")
     }
   
-    async getById(id) {
+    async getById(id, client) {
       throw new Error("Method not implemented")
     }
   
-    async create(orderData) {
+    async create(orderData, client) {
+      throw new Error("Method not implemented")
+    }
+
+    async update(id, orderData, client) {
       throw new Error("Method not implemented")
     }
   
-    async update(id, orderData) {
-      throw new Error("Method not implemented")
-    }
-  
-    async delete(id) {
+    async delete(id, client) {
       throw new Error("Method not implemented")
     }
   }

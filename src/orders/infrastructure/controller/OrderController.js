@@ -1,97 +1,79 @@
-import { OrderService } from "../../application/OrderService.js";
-import { DatabaseOrderRepository } from "../adapters/DatabaseOrderRepository.js";
-import { validateOrder, validateOrderUpdate } from "../../domain/orderSchema.js";
-import { AccessControl } from "../../../shared/AccessControl.js";
-
-const orderRepository = new DatabaseOrderRepository();
-const orderService = new OrderService(orderRepository);
-
+// src/modules/orders/controller/OrderController.js
 export class OrderController {
-  static async getAll(req, res, next) {
-    try {
-      AccessControl.handleRequest(req, res);
-      const orders = await orderService.getAllOrders();
-      return res.status(200).json({ orders, message: "OK" });
-    } catch (error) {
-      next(error);
-    }
+  constructor(orderService) {
+    this.orderService = orderService;
   }
 
-  static async getById(req, res, next) {
+  getAll = async (req, res) => {
     try {
-      AccessControl.handleRequest(req, res);
-      const { id } = req.params;
-      const order = await orderService.getOrderById(id);
-
-      if (!order)
-        return res.status(404).json({ message: "Orden no encontrada" });
-
-      return res.status(200).json(order);
-    } catch (error) {
-      next(error);
+      const orders = await this.orderService.getAllOrders();
+      res.status(200).json({orders, message: "Ordenes encontradas"});
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-  }
+  };
 
-  static async create(req, res, next) {
+  getById = async (req, res) => {
     try {
-      const result = validateOrder(req.body);
-      if (!result.success)
-        return res.status(400).json({
-          message: "Error en los datos de la orden",
-          errors: result.error.errors,
-        });
-
-      AccessControl.handleRequest(req, res);
-      const newOrder = await orderService.createOrder(result.data);
-
-      return res.status(201).json({
-        message: "Orden creada exitosamente",
-        order: newOrder,
-      });
-    } catch (error) {
-      next(error);
+      const order = await this.orderService.getOrderById(req.params.id);
+      res.status(200).json({order, message: "Orden encontrada"});
+    } catch (err) {
+      res.status(404).json({ error: err.message });
     }
-  }
+  };
 
-  static async updatePartial(req, res, next) {
+  create = async (req, res) => {
+    try {
+      const order = await this.orderService.createOrder(req.body);
+      res.status(201).json({order, message: "Orden creada correctamente"});
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+
+  delete = async (req, res) => {
     try {
       const { id } = req.params;
-      const result = validateOrderUpdate(req.body);
-
-      if (!result.success)
-        return res.status(400).json({
-          message: "Datos de actualización inválidos",
-          errors: result.error.errors,
-        });
-
-      AccessControl.handleRequest(req, res);
-      const updatedOrder = await orderService.updateOrder(id, result.data);
-
-      if (!updatedOrder)
-        return res.status(404).json({ message: "Orden no encontrada" });
-
-      return res.status(200).json({
-        message: "Orden actualizada exitosamente",
-        order: updatedOrder,
-      });
-    } catch (error) {
-      next(error);
+      const deleted = await this.orderService.deleteOrder(id);
+      if (deleted) {
+        res.status(200).json({ message: "Orden eliminada correctamente" });
+      } else {
+        res.status(404).json({ message: "Orden no encontrada" });
+      }
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-  }
+  };
 
-  static async delete(req, res, next) {
+
+  addItem = async (req, res) => {
     try {
-      AccessControl.handleRequest(req, res);
       const { id } = req.params;
-      const deleted = await orderService.deleteOrder(id);
-
-      if (!deleted)
-        return res.status(404).json({ message: "Orden no encontrada" });
-
-      // 204 No Content debe cerrar el response
-      return res.status(204).send();
-    } catch (error) {
-      next(error);
+      console.log(req.body)
+      const result = await this.orderService.addItemToOrder(id, req.body);
+      res.status(201).json({result, message: "Item agregado correctamente"});
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-  }
+  };
+
+  updateItem = async (req, res) => {
+    try {
+      const { id, itemId } = req.params;
+      const result = await this.orderService.updateItemInOrder(id, itemId, req.body);
+      res.status(200).json({result, message: "Item actualizado correctamente"});
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+
+  deleteItem = async (req, res) => {
+    try {
+      const { id, itemId } = req.params;
+      const result = await this.orderService.deleteItemFromOrder(id, itemId);
+      res.status(200).json({result, message: "Item eliminado correctamente"});
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
 }

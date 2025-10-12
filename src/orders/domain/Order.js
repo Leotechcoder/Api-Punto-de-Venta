@@ -1,57 +1,67 @@
-/*Asi entran los datos desde el frontend y salen los datos desde la api hacia la base de datos. Con
-esto conseguimos mantener la consistencia en el uso de camelCase en el dominio del frontend
-y snake_case en la base de datos y backend */
-
-
 export class Order {
-  constructor({ id, userId, userName, totalAmount, status, itemsId, createdAt, updatedAt }) {
+  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType }) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
     this.totalAmount = totalAmount;
-    this.status = status;
-    this.itemsId = itemsId;
+    this.status = status || "pending";
+    this.items = items || [];
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.paymentInfo = paymentInfo;
+    this.deliveryType = deliveryType
   }
 
-  // ---- FACTORY METHODS ----
-
-  /** Crea una Order a partir de los datos en formato de la base de datos (snake_case) */
+  // FACTORY METHODS
   static fromPersistence(dbRecord) {
-    if (!dbRecord) return null;
-
     return new Order({
       id: dbRecord.id_,
       userId: dbRecord.user_id,
       userName: dbRecord.user_name,
       totalAmount: dbRecord.total_amount,
       status: dbRecord.status,
-      itemsId: dbRecord.items_id,
       createdAt: dbRecord.created_at,
       updatedAt: dbRecord.updated_at,
+      paymentInfo: dbRecord.payment_info,
+      deliveryType: dbRecord.delivery_type
     });
   }
 
-  /** Crea una Order a partir de los datos que vienen desde el frontend o API */
   static fromDTO(dto) {
-    if (!dto) return null;
-
     return new Order({
       id: dto.id,
       userId: dto.userId,
       userName: dto.userName,
       totalAmount: dto.totalAmount,
       status: dto.status,
-      itemsId: dto.itemsId,
+      items: dto.items,
       createdAt: dto.createdAt,
-      updatedAt: dto.updatedAt,
+      paymentInfo: dto.paymentInfo,
+      deliveryType:dto.deliveryType
     });
   }
 
-  // ---- SERIALIZERS ----
+  // MÉTODOS DE DOMINIO
+  updateStatus(newStatus) {
+    const valid = ["pending", "paid", "cancelled", "completed"];
+    if (!valid.includes(newStatus)) throw new Error("Invalid order status");
+    this.status = newStatus;
+  }
 
-  /** Convierte una Order al formato que espera el frontend (camelCase) */
+  updateTotal(newTotal) {
+    if (newTotal < 0) throw new Error("Total amount cannot be negative");
+    this.totalAmount = newTotal;
+  }
+
+  addItem(itemId) {
+    if (!this.itemsId.includes(itemId)) this.itemsId.push(itemId);
+  }
+
+  removeItem(itemId) {
+    this.itemsId = this.itemsId.filter((id) => id !== itemId);
+  }
+
+  // SERIALIZERS
   toDTO() {
     return {
       id: this.id,
@@ -59,13 +69,13 @@ export class Order {
       userName: this.userName,
       totalAmount: this.totalAmount,
       status: this.status,
-      itemsId: this.itemsId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      paymentInfo: this.paymentInfo,
+      deliveryType: this.deliveryType
     };
   }
 
-  /** Convierte una Order al formato que espera la base de datos (snake_case) */
   toPersistence() {
     return {
       id_: this.id,
@@ -73,11 +83,24 @@ export class Order {
       user_name: this.userName,
       total_amount: this.totalAmount,
       status: this.status,
-      items_id: this.itemsId,
       created_at: this.createdAt,
-      update_at: this.updatedAt,
+      payment_info: this.paymentInfo,
+      delivery_type: this.deliveryType
+    };
+  }
+
+   /**
+   * Prepara los datos para crear una nueva orden en la base de datos.
+   * No incluye `id_` ni `created_at` porque esos los genera el repositorio.
+   */
+  toPersistenceForCreate() {
+    return {
+      user_id: this.userId,
+      user_name: this.userName,
+      total_amount: this.totalAmount,
+      status: this.status,
+      payment_info: this.paymentInfo,
+      delivery_type: this.deliveryType
     };
   }
 }
-
-  

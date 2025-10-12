@@ -1,19 +1,14 @@
 import { Router } from "express";
 import { ItemController } from "../controller/ItemController.js";
+import { ItemService } from "../../application/ItemService.js";
+import { DatabaseItemRepository } from "../../infrastructure/adapters/DatabaseItemRepository.js";
 
 export const routerItems = Router();
 
-// GET - Obtener todos los items
-routerItems.get("/items", ItemController.getAll);
+const itemRepository = new DatabaseItemRepository();
+const itemService = new ItemService(itemRepository);
+const itemController = new ItemController(itemService);
 
-// GET - Obtener un item por su id
-routerItems.get("/items/:id", ItemController.getById);
-
-// POST - Crear un item
-routerItems.post("/items", ItemController.createOrder);
-
-// PATCH - Actualizar un item
-routerItems.patch("/items/:id", ItemController.updatePartial);
-
-// DELETE - Eliminar un item
-routerItems.delete("/items/:id", ItemController.delete);
+routerItems.get("/items", (req, res) => itemController.getAll(req, res));
+routerItems.get("/items/:id", (req, res) => itemController.getById(req, res));
+// ❌ No más POST /item, PATCH, DELETE fuera del contexto de órdenes.

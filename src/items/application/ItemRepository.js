@@ -4,19 +4,19 @@ export class ItemRepository {
         throw new Error("Method not implemented");
     }
 
-    async getById(id) {
+    async getById(id, client) {
         throw new Error("Method not implemented");
     }
 
-    async create(itemData) {
+    async createForOrder(itemData, item, client) {
         throw new Error("Method not implemented");
     }
 
-    async update(id, itemData) {
+    async update(id, fields, client) {
         throw new Error("Method not implemented");
     }
 
-    async delete(id) {
+    async delete(id, client) {
         throw new Error("Method not implemented");
     }
 }

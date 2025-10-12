@@ -1,91 +1,42 @@
+// src/modules/items/controller/ItemController.js
 
-import { ItemService } from "../../application/ItemService.js";
-import { DatabaseItemRepository } from "../adapters/DatabaseItemRepository.js";
-import { validateItems, validatePartialItems, validateArray } from "../../domain/itemsSchema.js";
-
-const itemRepository = new DatabaseItemRepository();
-const itemService = new ItemService(itemRepository);
+/**
+ * ItemController (ligero)
+ * - Por política de dominio los endpoints que modifican items están guardados dentro del contexto orders:
+ *   (POST /orders, POST /orders/:id/items, PATCH /orders/:id/items/:itemId, DELETE /orders/:id/items/:itemId)
+ *
+ * - Este controlador ofrece endpoints de sólo lectura y da mensajes claros si alguien intenta crear items fuera del agregado.
+ */
 
 export class ItemController {
-  static async getAll(req, res) {
+  constructor(itemService) {
+    this.itemService = itemService;
+
+    // bind para usar directamente como handlers
+    this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+  }
+
+  // GET /items
+  async getAll(req, res) {
     try {
-      const items = await itemService.getAllItems();
-      const arrayPlano = Object.values(items).filter(value => typeof value === 'object');
-      return res.status(200).json({items: arrayPlano, message: "OK"});
+      const items = await this.itemService.getAllItems();
+      return res.status(200).json({ items, message: "OK" });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   }
 
-  static async getById(req, res) {
+  // GET /items/:id
+  async getById(req, res) {
     try {
       const { id } = req.params;
-      const item = await itemService.getItemById(id);
-      if (!item) {
-        return res.status(404).json({ message: "Item not found" });
-      }
+      const item = await this.itemService.getItemById(id);
+      if (!item) return res.status(404).json({ message: "Item not found" });
       return res.status(200).json(item);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   }
 
-  // static async create(req, res) {
-  //   const validation = validateArray(req.body);
-  //   if (!validation.success) {
-  //     return res.status(400).json({ error: validation.error });
-  //   }
-
-  //   try {
-  //     const newItems = await itemService.createItem(validation.data);
-  //     return res.status(201).json(newItems);
-  //   } catch (error) {
-  //     return res.status(500).json({ error: error.message });
-  //   }
-  // }
-
-  static async createOrder(req, res) {
-  
-  console.log('Objeto json para crear una orden',req.body);
-  
-  const validation = validatePartialItems(req.body);
-  
-  if (!validation.success) {
-    return res.status(400).json({ error: validation.error });
-  }
-  
-  try {
-    const createdOrdersItems = await itemService.createItem(validation.data);
-    console.log(createdOrdersItems);
-    return res.status(200).json(`Orden creada numero: ${createdOrdersItems}`);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-    
-  };
-
-  static async updatePartial(req, res) {
-    const { id } = req.params;
-    const validation = validatePartialItems(req.body);
-    if (!validation.success) {
-      return res.status(400).json({ error: validation.error });
-    }
-
-    try {
-      const updatedItem = await itemService.updateItem(id, validation.data);
-      return res.status(200).json(updatedItem);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  }
-
-  static async delete(req, res) {
-    try {
-      const { id } = req.params;
-      await itemService.deleteItem(id);
-      return res.status(204).end();
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  }
 }

@@ -1,94 +1,76 @@
-import pool from "../../../shared/infrastructure/postgresConnection.js";
+// src/modules/items/infrastructure/DatabaseItemRepository.js
 import { ItemRepository } from "../../application/ItemRepository.js";
 import { idGenerator } from "../../../shared/idGenerator.js";
 
 export class DatabaseItemRepository extends ItemRepository {
-  async getAll() {
-    const result = await pool.query("SELECT * FROM public.order_items");    
+  async getAll(client) {
+    const result = await client.query("SELECT * FROM public.order_items");
     return result.rows;
   }
 
-  async getById(id) {
-    const result = await pool.query(
-      "SELECT * FROM public.items WHERE id = $1",
+  async getById(id, client) {
+    const result = await client.query(
+      "SELECT * FROM public.order_items WHERE id_ = $1",
       [id]
     );
     return result.rows[0] || null;
   }
 
-  async create(validateData) {
-    const {
-      user_id,
-      user_name,
-      total_amount,
-      items,
-      paymentInfo,
-      deliveryType,
-    } = validateData;
-    console.log("Datos de la orden: ", {
-      user_id,
-      user_name,
-      total_amount,
-      items,
-      paymentInfo,
-      deliveryType,
-    });
+  async createForOrder(orderId, items, client) {
+    // Asegurarse de que siempre sea un array
+    const itemsArray = Array.isArray(items) ? items : [items];
 
-    const client = await pool.connect();
+    // Generar los valores dinámicos
+    const values = [];
+    const placeholders = [];
 
-    //Genero los datos para la orden
-    const orderId = idGenerator("Orders");
-    const status = "pending";
-    const created_at = new Date();
-
-    // 1️⃣ Insertar la orden
-    const orderResult = await client.query(
-      `INSERT INTO public.orders (id_, user_id, user_name, total_amount, status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id_`,
-      [orderId, user_id, user_name, total_amount, status, created_at]
-    );
-
-    const order_id = orderResult.rows[0].id_;
-
-    // 2️⃣ Insertar los items en OrderItems
-    const insertItemsPromises = items.map((item) => {
+    itemsArray.forEach((item, index) => {
       const itemId = idGenerator("Items");
-      return client.query(
-        `INSERT INTO public.order_items (id_, order_id, product_id, product_name, description, quantity, unit_price, payment_info, delivery_type)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [
-          itemId,
-          order_id,
-          item.product_id,
-          item.product_name,
-          item.description,
-          item.quantity,
-          item.unit_price,
-          paymentInfo,
-          deliveryType,
-        ]
+      const baseIndex = index * 7;
+
+      placeholders.push(
+        `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${
+          baseIndex + 4
+        }, $${baseIndex + 5}, $${baseIndex + 6}, $${baseIndex + 7})`
+      );
+
+      values.push(
+        itemId,
+        orderId,
+        item.product_id,
+        item.product_name,
+        item.description,
+        item.quantity,
+        item.unit_price
       );
     });
 
-    const itemResult = await Promise.all(insertItemsPromises);
-    console.log("Datos de la tabla OrderItems: ", itemResult);
-    if (itemResult[0].rowCount === 1) {
-      return order_id;
-    }
-    return null;
+    const query = `
+    INSERT INTO public.order_items 
+      (id_, order_id, product_id, product_name, description, quantity, unit_price)
+    VALUES ${placeholders.join(", ")}
+    RETURNING *;
+  `;
+
+    const result = await client.query(query, values);
+    return result.rows; // devuelve un array de items insertados
   }
 
-  async update(id, itemData) {
-    const { product_name, description, quantity, unit_price } = itemData;
-    const result = await pool.query(
-      "UPDATE public.items SET product_name = $1, description = $2, quantity = $3, unit_price = $4 WHERE id = $5 RETURNING *",
-      [product_name, description, quantity, unit_price, id]
-    );
+  async updateFields(itemId, fields, client) {
+    const keys = Object.keys(fields);
+    const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(", ");
+    const values = Object.values(fields);
+    const q = `UPDATE public.order_items SET ${setClause} WHERE id_ = $${
+      keys.length + 1
+    } RETURNING *`;
+    const result = await client.query(q, [...values, itemId]);
     return result.rows[0];
   }
 
-  async delete(id) {
-    await pool.query("DELETE FROM public.items WHERE id = $1", [id]);
+  async delete(itemId, client) {
+    await client.query(`DELETE FROM public.order_items WHERE id_ = $1`, [
+      itemId,
+    ]);
     return true;
   }
 }
