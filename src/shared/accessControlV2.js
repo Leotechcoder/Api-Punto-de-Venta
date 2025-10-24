@@ -4,8 +4,8 @@ export class AccessControl {
   static corsHandler(req, res, next) {
     const origin = req.header("origin");
 
-    if (ACCEPTED_ORIGINS.includes(origin)) {
-      res.header("Access-Control-Allow-Origin", origin);
+    if (!origin || ACCEPTED_ORIGINS.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin || "*");
       res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
       res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
       res.header("Access-Control-Allow-Credentials", "true");

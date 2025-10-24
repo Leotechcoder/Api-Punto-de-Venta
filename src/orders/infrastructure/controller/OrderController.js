@@ -1,4 +1,6 @@
 // src/modules/orders/controller/OrderController.js
+import { validateOrder, validateOrderUpdate } from "../../domain/orderSchema.js"; // Ajustá el path según tu estructura
+
 export class OrderController {
   constructor(orderService) {
     this.orderService = orderService;
@@ -7,7 +9,7 @@ export class OrderController {
   getAll = async (req, res) => {
     try {
       const orders = await this.orderService.getAllOrders();
-      res.status(200).json({orders, message: "Ordenes encontradas 🙌"});
+      res.status(200).json({ orders, message: "Órdenes encontradas 🙌" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -16,7 +18,7 @@ export class OrderController {
   getById = async (req, res) => {
     try {
       const order = await this.orderService.getOrderById(req.params.id);
-      res.status(200).json({order, message: "Orden encontrada 🤝"});
+      res.status(200).json({ order, message: "Orden encontrada 🤝" });
     } catch (err) {
       res.status(404).json({ error: err.message });
     }
@@ -24,8 +26,17 @@ export class OrderController {
 
   create = async (req, res) => {
     try {
-      const order = await this.orderService.createOrder(req.body);
-      res.status(201).json({order, message: "Orden creada correctamente 🤘"});
+      // ✅ Validación con Zod
+      const validation = validateOrder(req.body);
+      if (!validation.success) {
+        return res.status(400).json({
+          error: "Datos inválidos",
+          details: validation.error.errors.map((e) => e.message),
+        });
+      }
+
+      const order = await this.orderService.createOrder(validation.data);
+      res.status(201).json({ order, message: "Orden creada correctamente 🤘" });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
@@ -45,13 +56,11 @@ export class OrderController {
     }
   };
 
-
   addItem = async (req, res) => {
     try {
       const { id } = req.params;
-      console.log(req.body)
       const result = await this.orderService.addItemToOrder(id, req.body);
-      res.status(201).json({result, message: "Item agregado correctamente 👍"});
+      res.status(201).json({ result, message: "Item agregado correctamente 👍" });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
@@ -60,8 +69,17 @@ export class OrderController {
   updateItem = async (req, res) => {
     try {
       const { id, itemId } = req.params;
-      const result = await this.orderService.updateItemInOrder(id, itemId, req.body);
-      res.status(200).json({result, message: "Item actualizado correctamente 🤙"});
+      // ✅ Validar campos actualizables
+      const validation = validateOrderUpdate(req.body);
+      if (!validation.success) {
+        return res.status(400).json({
+          error: "Datos inválidos para actualización",
+          details: validation.error.errors.map((e) => e.message),
+        });
+      }
+
+      const result = await this.orderService.updateItemInOrder(id, itemId, validation.data);
+      res.status(200).json({ result, message: "Item actualizado correctamente 🤙" });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
@@ -71,7 +89,7 @@ export class OrderController {
     try {
       const { id, itemId } = req.params;
       const result = await this.orderService.deleteItemFromOrder(id, itemId);
-      res.status(200).json({result, message: "Item eliminado correctamente 👌"});
+      res.status(200).json({ result, message: "Item eliminado correctamente 👌" });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }

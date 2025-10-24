@@ -7,7 +7,7 @@ export const swaggerDefinition = {
     title: "API Documentation 'Cangre Burgers'",
     version: "1.0.0",
     description: `
-      📘 Documentación pública de la API "Cangre Burgers". Acá podes encontrar todos los endpoints (por modulo) disponibles, 
+      📘 Documentación pública de la API para "Cangre Burgers". Acá podes encontrar todos los endpoints (por modulo) disponibles, 
       sus parámetros, respuestas y ejemplos de uso.
     `,
     contact: {

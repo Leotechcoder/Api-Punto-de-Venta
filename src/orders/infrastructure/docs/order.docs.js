@@ -9,9 +9,9 @@
  * @swagger
  * components:
  *   schemas:
- *     PaymentInfo:
+ *     PaymentAmounts:
  *       type: object
- *       description: Métodos de pago asociados a la orden
+ *       description: Monto especificado para cada método de pago
  *       properties:
  *         efectivo:
  *           type: string
@@ -26,56 +26,74 @@
  *         efectivo: "12000"
  *         credito: ""
  *         debito: ""
- *
+
+ *     PaymentInfo:
+ *       type: object
+ *       description: Información sobre los métodos de pago utilizados
+ *       properties:
+ *         methods:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [efectivo, credito, debito]
+ *           example: ["efectivo"]
+ *         amounts:
+ *           $ref: '#/components/schemas/PaymentAmounts'
+ *       example:
+ *         methods: ["efectivo"]
+ *         amounts:
+ *           efectivo: "12000"
+ *           credito: ""
+ *           debito: ""
+
  *     Item:
  *       type: object
- *       description: Ítem de un pedido
+ *       description: Ítem incluido dentro de una orden
  *       properties:
- *         product_id:
+ *         id:
  *           type: string
- *           example: "prod-123"
- *         product_name:
+ *           example: "It-2410202-425"
+ *         productId:
  *           type: string
- *           example: "Pizza Napolitana"
+ *           example: "Pr-5102025-603"
+ *         productName:
+ *           type: string
+ *           example: "Pizza de jamon"
  *         description:
  *           type: string
- *           example: "Pizza con salsa de tomate, muzzarella y albahaca"
- *         unit_price:
- *           type: number
- *           example: 2500
+ *           example: "Pizza con jamón y muzzarella"
+ *         unitPrice:
+ *           type: string
+ *           example: "12000"
  *         quantity:
  *           type: integer
- *           example: 2
- *
+ *           example: 1
+
  *     Order:
  *       type: object
  *       description: Representa una orden del sistema
  *       properties:
  *         id:
  *           type: string
- *           example: "Orders-123abc"
+ *           example: "Or-2410202-542"
  *         userId:
  *           type: string
- *           example: "User-001"
+ *           example: "Us-2410202-542"
  *         userName:
  *           type: string
- *           example: "thunderClient"
+ *           example: "Invitado"
+ *         status:
+ *           type: string
+ *           enum: [pending, paid, canceled, completed]
+ *           example: "pending"
  *         totalAmount:
  *           type: number
  *           example: 12000
- *         status:
- *           type: string
- *           enum: [pending, paid, cancelled, completed]
- *           example: "pending"
  *         paymentInfo:
  *           $ref: '#/components/schemas/PaymentInfo'
  *         deliveryType:
  *           type: string
- *           example: "takeaway"
- *         items:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Item'
+ *           example: "local"
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -106,7 +124,7 @@
  *                     $ref: '#/components/schemas/Order'
  *                 message:
  *                   type: string
- *                   example: "Ordenes encontradas 🙌"
+ *                   example: "Órdenes encontradas 🙌"
  *       500:
  *         description: Error interno del servidor
  */
@@ -152,7 +170,25 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Order'
+ *             type: object
+ *             example:
+ *               userId: "Us-2410202-542"
+ *               userName: "Invitado"
+ *               status: "pending"
+ *               items:
+ *                 - productId: "Pr-5102025-603"
+ *                   productName: "Pizza de jamon"
+ *                   description: ""
+ *                   unitPrice: "12000"
+ *                   quantity: 1
+ *               totalAmount: 12000
+ *               paymentInfo:
+ *                 methods: ["efectivo"]
+ *                 amounts:
+ *                   efectivo: "12000"
+ *                   credito: ""
+ *                   debito: ""
+ *               deliveryType: "local"
  *     responses:
  *       201:
  *         description: Orden creada correctamente 🤘
@@ -237,9 +273,9 @@
  *                       example: 14500
  *                 message:
  *                   type: string
- *                   example: "Item agregado correctamente 👍"
+ *                   example: "Ítem agregado correctamente 👍"
  *       400:
- *         description: Error en los datos o la orden no está en estado pending
+ *         description: Error en los datos o la orden no está en estado Pendiente
  */
 
 /**
@@ -267,7 +303,7 @@
  *             type: object
  *             example:
  *               quantity: 3
- *               unit_price: 2000
+ *               unitPrice: "2000"
  *     responses:
  *       200:
  *         description: Ítem actualizado correctamente 🤙
@@ -286,7 +322,7 @@
  *                       example: 15000
  *                 message:
  *                   type: string
- *                   example: "Item actualizado correctamente 🤙"
+ *                   example: "Ítem actualizado correctamente 🤙"
  *       400:
  *         description: Error en la actualización (ítem u orden no válida)
  */
@@ -321,13 +357,13 @@
  *                   properties:
  *                     deletedItemId:
  *                       type: string
- *                       example: "item-001"
+ *                       example: "It-2410202-425"
  *                     total:
  *                       type: number
  *                       example: 12000
  *                 message:
  *                   type: string
- *                   example: "Item eliminado correctamente 👌"
+ *                   example: "Ítem eliminado correctamente 👌"
  *       400:
- *         description: Error (orden no encontrada o no en estado pending)
+ *         description: Error (orden no encontrada o no en estado Pendiente)
  */
