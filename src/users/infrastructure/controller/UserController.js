@@ -1,75 +1,120 @@
-
-import { UserService } from "../../application/UserService.js";
-import { DatabaseUserRepository } from "../adapters/DatabaseUserRepository.js";
-import { UserSchema } from "../../domain/userSchema.js";
-import { AccessControl } from "../../../shared/AccessControl.js";
-
-const userRepository = new DatabaseUserRepository();
-const userService = new UserService(userRepository);
+import { validateUser, validateUserUpdate } from "../../domain/UserSchema.js";
 
 export class UserController {
-  static async getAll(req, res) {
-    try {
-      if (!AccessControl.handleRequest(req, res)) return;
-      const users = await userService.getAllUsers();
-      return res.status(200).json({data:users, message: "OK"});
-    } catch (error) {
-      console.error("❌ Error en getAll:", error);
-      return res.status(500).json({ error: "Internal server error", details: error.message });
-    }
+  constructor(userService) {
+    this.userService = userService;
   }
 
-  static async getById(req, res) {
+  // 📜 Obtener todos los usuarios
+  getAll = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-      const user = await userService.getUserById(req.params.id);
-      if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
-      return res.status(200).json({data:user, message: "Usuario encontrado"});
+      const users = await this.userService.getAllUsers();
+      return res.status(200).json({
+        data: users,
+        message: "Usuarios encontrados 🙌",
+      });
     } catch (error) {
-      console.error("❌ Error en getById:", error);
-      return res.status(500).json({ error: "Internal server error", details: error.message });
+      console.error("❌ [UserController] Error en getAll:", error);
+      return res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message,
+      });
     }
-  }
+  };
 
-  static async create(req, res) {
+  // 🔎 Obtener usuario por ID
+  getById = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-      const result = UserSchema.validatePartialUser(req.body);
-      if (!result.success) return res.status(400).json({ error: "Datos de usuario invalidos", details: result.error.errors });
-      const newUser = await userService.createUser(result.data);
-      return res.status(201).json({ data: newUser , message: "Usuario creado exitosamente" });
-    } catch (error) {
-      console.error("❌ Error en create:", error);
-      return res.status(500).json({ error: "Internal server error", details: error.message });
-    }
-  }
+      const user = await this.userService.getUserById(req.params.id);
+      if (!user)
+        return res.status(404).json({ error: "Usuario no encontrado" });
 
-  static async updatePartial(req, res) {
-    try {
-      if (!AccessControl.handleRequest(req, res)) return;
-      const result = UserSchema.validateUserUpdate(req.body);
-      if (!result.success) return res.status(400).json({ error: "Invalid user data", details: result.error.errors });
-      const updatedUser = await userService.updateUser(req.params.id, result.data);
-      if (!updatedUser) return res.status(404).json({ error: "Usuario no encontrado" });
-      const usuarioActualizado = { ...updatedUser }
-      console.log("✅ Usuario actualizado:", usuarioActualizado);
-      
-      return res.status(200).json({data: usuarioActualizado, message: "Usuario actualizado exitosamente"});
+      return res.status(200).json({
+        user,
+        message: "Usuario encontrado 🤝",
+      });
     } catch (error) {
-      console.error("❌ Error en updatePartial:", error);
-      return res.status(500).json({ error: "Internal server error", details: error.message });
+      console.error("❌ [UserController] Error en getById:", error);
+      return res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message,
+      });
     }
-  }
+  };
 
-  static async delete(req, res) {
+  // ✳️ Crear nuevo usuario
+  create = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-      const deleted = await userService.deleteUser(req.params.id);
-      if (!deleted) return res.status(404).json({ error: "Usuario no encontrado" });
-      return res.status(200).json({message: "Usuario eliminado exitosamente"});
+      const validation = validateUser(req.body);
+      if (!validation.success) {
+        return res.status(400).json({
+          error: "Datos inválidos",
+          details: validation.error.errors,
+        });
+      }
+
+      const newUser = await this.userService.createUser(validation.data);
+      return res.status(201).json({
+        data: newUser,
+        message: "Usuario creado correctamente 🤘",
+      });
     } catch (error) {
-      console.error("❌ Error en delete:", error);
-      return res.status(500).json({ error: "Internal server error", details: error.message });
+      console.error("❌ [UserController] Error en create:", error);
+      return res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message,
+      });
     }
-  }
+  };
+
+  // 🛠️ Actualizar parcialmente un usuario
+  updatePartial = async (req, res) => {
+    try {
+      const validation = validateUserUpdate(req.body);
+      if (!validation.success) {
+        return res.status(400).json({
+          error: "Datos inválidos",
+          details: validation.error.errors,
+        });
+      }
+
+      const updatedUser = await this.userService.updateUser(
+        req.params.id,
+        validation.data
+      );
+
+      if (!updatedUser)
+        return res.status(404).json({ error: "Usuario no encontrado" });
+
+      return res.status(200).json({
+        data: updatedUser,
+        message: "Usuario actualizado exitosamente 🤙",
+      });
+    } catch (error) {
+      console.error("❌ [UserController] Error en updatePartial:", error);
+      return res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message,
+      });
+    }
+  };
+
+  // 🗑️ Eliminar usuario
+  delete = async (req, res) => {
+    try {
+      const deleted = await this.userService.deleteUser(req.params.id);
+      if (!deleted)
+        return res.status(404).json({ error: "Usuario no encontrado" });
+
+      return res
+        .status(200)
+        .json({ message: "Usuario eliminado correctamente 👌" });
+    } catch (error) {
+      console.error("❌ [UserController] Error en delete:", error);
+      return res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message,
+      });
+    }
+  };
 }

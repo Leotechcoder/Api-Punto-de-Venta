@@ -1,68 +1,80 @@
 import { User } from "../domain/User.js";
+import pool from "../../shared/infrastructure/postgresConnection.js";
 
 export class UserService {
   constructor(userRepository) {
-    this.userRepository = userRepository;
+    this.repository = userRepository;
   }
 
   async getAllUsers() {
-    const data = await this.userRepository.getAll();
-    return data.map(
-      (row) =>
-        new User(
-          row.id_,
-          row.username,
-          row.email,
-          row.phone,
-          row.address,
-          row.avatar,
-          row.registration_date
-        )
-    );
+    const client = await pool.connect();
+    try {
+      const users = await this.repository.getAll(client);
+      return users.map(User.fromPersistence).map((u) => u.toDTO());
+    } catch (error) {
+      console.error("❌ [UserService] Error en getAllUsers:", error);
+      throw error;
+    } finally {
+      client.release(); // ✅ libera el cliente al pool
+    }
   }
 
   async getUserById(id) {
-    const user = await this.userRepository.getById(id);
-    if (!user) return null;
-    return new User(
-      user.id_,
-      user.username,
-      user.email,
-      user.phone,
-      user.address,
-      user.avatar,
-      user.registration_date
-    );
+    const client = await pool.connect();
+    try {
+      const record = await this.repository.getById(id, client);
+      if (!record) return null;
+      return User.fromPersistence(record).toDTO();
+    } catch (error) {
+      console.error("❌ [UserService] Error en getUserById:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async createUser(userData) {
-    const user = await this.userRepository.create(userData);
-    return new User(
-      user.id_,
-      user.username,
-      user.email,
-      user.phone,
-      user.address,
-      user.avatar,
-      user.registration_date
-    );
+    const client = await pool.connect();
+    try {
+      const user = User.fromDTO(userData);
+      const record = await this.repository.create(user.toPersistenceForCreate(), client);
+      return User.fromPersistence(record).toDTO();
+    } catch (error) {
+      console.error("❌ [UserService] Error en createUser:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async updateUser(id, userData) {
-    const user = await this.userRepository.update(id, userData);
-    if (!user) return null;
-    return new User(
-      user.id_,
-      user.username,
-      user.email,
-      user.phone,
-      user.address,
-      user.avatar,
-      user.registration_date
-    );
+    const client = await pool.connect();
+    try {
+      const existing = await this.repository.getById(id, client);
+      if (!existing) return null;
+
+      const user = User.fromPersistence(existing);
+      user.updateProfileData(userData);
+
+      const updatedRecord = await this.repository.update(id, user, client);
+      return User.fromPersistence(updatedRecord).toDTO();
+    } catch (error) {
+      console.error("❌ [UserService] Error en updateUser:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async deleteUser(id) {
-    return await this.userRepository.delete(id);
+    const client = await pool.connect();
+    try {
+      return await this.repository.delete(id, client);
+    } catch (error) {
+      console.error("❌ [UserService] Error en deleteUser:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }
