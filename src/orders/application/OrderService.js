@@ -10,12 +10,14 @@ export class OrderService {
   }
 
   async getAllOrders() {
-    const dbOrders = await this.orderRepository.getAll(pool);
+    const client = await pool.connect();
+    const dbOrders = await this.orderRepository.getAll(client);
     return dbOrders.map(Order.fromPersistence).map((order) => order.toDTO());
   }
 
   async getOrderById(id) {
-    const dbOrder = await this.orderRepository.getById(id, pool);
+    const client = await pool.connect();
+    const dbOrder = await this.orderRepository.getById(id, client);
     if (!dbOrder) throw new Error("Order not found");
     return Order.fromPersistence(dbOrder).toDTO();
   }

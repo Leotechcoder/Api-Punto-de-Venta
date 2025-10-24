@@ -19,6 +19,8 @@ import { routerProducts } from "./src/products/infrastructure/routes/ProductRout
 import { routerItems } from "./src/items/infrastructure/routes/itemRoutes.js"
 import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHandler.js";
 
+//Setup swagger
+import { setupSwagger } from "./src/shared/infrastructure/http/swagger/swagger.setup.js";
 // Setup authentication strategies
 import { GoogleAuthService } from "./src/auth/infrastructure/adapters/GoogleAuthService.js";
 import { FacebookAuthService } from "./src/auth/infrastructure/adapters/FacebookAuthService.js";
@@ -83,6 +85,10 @@ app.use("/api", routerItems);
 // Error handling
 app.use(errorHandler);
 
+// Setup swagger
+setupSwagger(app);
+
+// Start server
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor corriendo en el puerto ${process.env.PORT}`);

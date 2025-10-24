@@ -1,27 +1,13 @@
-
 import z from "zod";
 
 // Esquema de validación para un ítem
 export const schemaItems = z.object({
-  user_id: z.string(),
-  user_name: z.string(),
-  items: z.array(z.object({
-    product_id: z.string(),
-    product_name: z.string(),
-    description: z.string(),
-    unit_price: z.string(),
-    quantity: z.string()
-  })),
-  total_amount: z.number(),
-  paymentInfo: z.object({
-    methods: z.array(z.string()),
-    amounts: z.object({
-      efectivo: z.string(),
-      credito: z.string(),
-      debito: z.string()
-    }),
-  }),
-  deliveryType: z.string()
+  order_id: z.string(),
+  product_id: z.string(),
+  product_name: z.string(),
+  description: z.string(),
+  unit_price: z.number(),
+  quantity: z.number(),
 });
 
 // Validación de un ítem completo

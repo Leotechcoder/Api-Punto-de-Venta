@@ -94,7 +94,7 @@ export class ProductController {
       }
       return res.status(200).json({
         data: updatedProduct,
-        message: "Producto actualizado correctamente",
+        message: "Producto actualizado correctamente 🤙",
       });
     } catch (error) {
       console.error("❌ Error en update:", error);
