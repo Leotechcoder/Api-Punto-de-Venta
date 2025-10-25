@@ -1,4 +1,4 @@
-import { validateUser, validateUserUpdate } from "../../domain/UserSchema.js";
+import { validateUser, validateUserUpdate } from "../../domain/userSchema.js";
 
 export class UserController {
   constructor(userService) {
