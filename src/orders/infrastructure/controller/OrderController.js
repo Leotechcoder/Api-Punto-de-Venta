@@ -28,6 +28,7 @@ export class OrderController {
     try {
       // ✅ Validación con Zod
       const validation = validateOrder(req.body);
+      console.log("Validation result:", validation);
       if (!validation.success) {
         return res.status(400).json({
           error: "Datos inválidos",

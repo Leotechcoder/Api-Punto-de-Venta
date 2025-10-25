@@ -24,30 +24,35 @@ const paymentAmountsSchema = z.object({
   debito: z.string().optional(),
 });
 
-// =========================
-// 💳 Subschema: Payment Info (opcional)
-// =========================
+// ✅ Subschema principal de paymentInfo (acepta vacío)
 const paymentInfoSchema = z.object({
   methods: z.array(z.enum(["efectivo", "credito", "debito"])).optional(),
   amounts: paymentAmountsSchema.optional(),
 })
-  // ⚡ Valida solo si el objeto fue enviado
   .refine(
     (p) => {
-      // Si no hay nada, no se valida
-      if (!p || (!p.methods && !p.amounts)) return true;
+      // Si no existe o está completamente vacío → OK
+      if (
+        !p ||
+        (!p.methods && !p.amounts) ||
+        (Array.isArray(p.methods) && p.methods.length === 0 &&
+         p.amounts && Object.values(p.amounts).every(v => v === "" || v === undefined))
+      ) {
+        return true;
+      }
 
+      // Si tiene algo, debe tener al menos un método o monto válido
       const hasMethods = Array.isArray(p.methods) && p.methods.length > 0;
       const hasAmounts =
         p.amounts &&
         Object.values(p.amounts).some(v => v !== undefined && v !== "");
 
-      // Si se envía el objeto, debe tener al menos un método o un monto
       return hasMethods || hasAmounts;
     },
     { message: "Debe especificarse al menos un método o monto si se envía paymentInfo" }
   )
-  .optional(); // 🔥 Esto permite que directamente no se envíe
+  .optional();
+
 
 // =========================
 // 🧾 Schema principal de la orden
