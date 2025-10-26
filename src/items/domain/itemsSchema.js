@@ -1,30 +1,44 @@
 import z from "zod";
 
-// Esquema de validación para un ítem
-export const schemaItems = z.object({
-  order_id: z.string(),
-  product_id: z.string(),
-  product_name: z.string(),
-  description: z.string(),
-  unit_price: z.number(),
-  quantity: z.number(),
+/**
+ * 🧱 Esquema base para un ítem (desde el FRONTEND, en camelCase)
+ */
+export const schemaItem = z.object({
+  orderId: z.string().optional(), // lo maneja el backend normalmente
+  productId: z.string().optional(),
+  productName: z.string().optional(),
+  description: z.string().optional(),
+  unitPrice: z.number().nonnegative().optional(),
+  quantity: z.number().int().nonnegative().optional(),
 });
 
-// Validación de un ítem completo
-export const validateItems = (items) => {
-  return schemaItems.safeParse(items);
+/**
+ * 🧩 Validación de ítem completo (por ejemplo, al crear una orden)
+ */
+export const validateItem = (item) => {
+  return schemaItem.refine(
+    (data) => data.productId && data.unitPrice && data.quantity,
+    { message: "Faltan campos obligatorios: productId, unitPrice y quantity" }
+  ).safeParse(item);
 };
 
-// Validación de un ítem parcial (para actualizaciones)
-export const validatePartialItems = (items) => {
-  return schemaItems.partial().safeParse(items);
+/**
+ * 🔧 Validación de ítem parcial (PATCH o actualizaciones)
+ */
+export const validatePartialItem = (item) => {
+  return schemaItem.partial().safeParse(item);
 };
 
-// Validación de un array de ítems
-export const validateArray = (items) => {
+/**
+ * 📦 Validación de un array de ítems
+ */
+export const validateItemArray = (items) => {
+  if (!Array.isArray(items)) {
+    return { success: false, error: [{ message: "Debe ser un array" }] };
+  }
+
   for (let i = 0; i < items.length; i++) {
-    const validation = schemaItems.safeParse(items[i]);
-
+    const validation = schemaItem.safeParse(items[i]);
     if (!validation.success) {
       return {
         success: false,
@@ -37,8 +51,5 @@ export const validateArray = (items) => {
     }
   }
 
-  return {
-    success: true,
-    data: items,
-  };
+  return { success: true, data: items };
 };

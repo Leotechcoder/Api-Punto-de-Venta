@@ -1,4 +1,5 @@
 // src/modules/orders/controller/OrderController.js
+import { validatePartialItem } from "../../../items/domain/itemsSchema.js";
 import { validateOrder, validateOrderUpdate } from "../../domain/orderSchema.js"; // Ajustá el path según tu estructura
 
 export class OrderController {
@@ -70,18 +71,23 @@ export class OrderController {
   updateItem = async (req, res) => {
     try {
       const { id, itemId } = req.params;
-      // ✅ Validar campos actualizables
-      const validation = validateOrderUpdate(req.body);
+
+      // Validar solo los campos que vengan (camelCase)
+      const validation = validatePartialItem(req.body);
+
       if (!validation.success) {
         return res.status(400).json({
-          error: "Datos inválidos para actualización",
-          details: validation.error.errors.map((e) => e.message),
+          error: "Datos inválidos para actualización del ítem",
+          details: validation.error.errors?.map((e) => e.message) || validation.error,
         });
       }
 
+      // Pasamos directamente la data validada al servicio
       const result = await this.orderService.updateItemInOrder(id, itemId, validation.data);
+
       res.status(200).json({ result, message: "Item actualizado correctamente 🤙" });
     } catch (err) {
+      console.error("❌ Error en updateItem:", err);
       res.status(400).json({ error: err.message });
     }
   };

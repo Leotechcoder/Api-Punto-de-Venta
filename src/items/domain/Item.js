@@ -12,8 +12,8 @@ export class Item {
     this.product_id = product_id;
     this.product_name = product_name;
     this.description = description;
-    this.unit_price = Number(unit_price);
-    this.quantity = Number(quantity);
+    this.unit_price = unit_price;
+    this.quantity = quantity;
   }
 
   // Factory desde registro DB (snake_case)
@@ -96,5 +96,13 @@ export class Item {
       unit_price: this.unit_price,
       quantity: this.quantity,
     };
+  }
+
+  toPersistenceForUpdate() {
+    const fields = {};
+    if (this.description !== undefined) fields.description = this.description;
+    if (this.unit_price !== undefined) fields.unit_price = this.unit_price;
+    if (this.quantity !== undefined) fields.quantity = this.quantity;
+    return fields;
   }
 }

@@ -56,16 +56,19 @@ export class DatabaseItemRepository extends ItemRepository {
     return result.rows; // devuelve un array de items insertados
   }
 
-  async updateFields(itemId, fields, client) {
-    const keys = Object.keys(fields);
-    const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(", ");
-    const values = Object.values(fields);
-    const q = `UPDATE public.order_items SET ${setClause} WHERE id_ = $${
-      keys.length + 1
-    } RETURNING *`;
-    const result = await client.query(q, [...values, itemId]);
-    return result.rows[0];
-  }
+  async updateFields(itemId, { description, quantity }, client) {
+  const q = `
+    UPDATE public.order_items
+    SET 
+      description = $1,
+      quantity = $2
+    WHERE id_ = $3
+    RETURNING *;
+  `;
+  const values = [description, quantity, itemId];
+  const result = await client.query(q, values);
+  return result.rows[0] || null;
+}
 
   async delete(itemId, client) {
     await client.query(`DELETE FROM public.order_items WHERE id_ = $1`, [

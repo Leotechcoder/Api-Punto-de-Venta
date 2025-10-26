@@ -110,6 +110,8 @@ export class OrderService {
 
   async updateItemInOrder(orderId, itemId, updateFields) {
     const client = await pool.connect();
+      console.log(updateFields);
+
     try {
       await client.query("BEGIN");
 
@@ -122,7 +124,10 @@ export class OrderService {
       const currentItem = await this.itemRepository.getById(itemId, client);
       if (!currentItem) throw new Error("Item not found");
 
-      const updatedItem = await this.itemRepository.updateFields(itemId, updateFields, client);
+      const updateFieldsRef = Item.fromDTO(updateFields).toPersistenceForUpdate();
+      console.log(updateFieldsRef);
+      
+      const updatedItem = await this.itemRepository.updateFields(itemId, updateFieldsRef, client);
 
       const totalRes = await client.query(
         `SELECT COALESCE(SUM(quantity * unit_price),0)::numeric AS total FROM public.order_items WHERE order_id = $1`,
