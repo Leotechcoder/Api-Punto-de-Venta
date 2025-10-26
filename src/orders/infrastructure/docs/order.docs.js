@@ -268,14 +268,11 @@
  *                   properties:
  *                     newItem:
  *                       $ref: '#/components/schemas/Item'
- *                     total:
- *                       type: number
- *                       example: 14500
  *                 message:
  *                   type: string
  *                   example: "Ítem agregado correctamente 👍"
  *       400:
- *         description: Error en los datos o la orden no está en estado Pendiente
+ *         description: Error en los datos enviados
  */
 
 /**
@@ -302,8 +299,8 @@
  *           schema:
  *             type: object
  *             example:
+ *               description: "Ejemplo de descripción actualizada"
  *               quantity: 3
- *               unitPrice: "2000"
  *     responses:
  *       200:
  *         description: Ítem actualizado correctamente 🤙
@@ -317,9 +314,6 @@
  *                   properties:
  *                     updatedItem:
  *                       $ref: '#/components/schemas/Item'
- *                     total:
- *                       type: number
- *                       example: 15000
  *                 message:
  *                   type: string
  *                   example: "Ítem actualizado correctamente 🤙"
@@ -358,12 +352,9 @@
  *                     deletedItemId:
  *                       type: string
  *                       example: "It-2410202-425"
- *                     total:
- *                       type: number
- *                       example: 12000
  *                 message:
  *                   type: string
  *                   example: "Ítem eliminado correctamente 👌"
  *       400:
- *         description: Error (orden no encontrada o no en estado Pendiente)
+ *         description: Error (item no encontrado u orden no válida)
  */

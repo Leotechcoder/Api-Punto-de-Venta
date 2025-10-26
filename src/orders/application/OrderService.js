@@ -99,7 +99,7 @@ export class OrderService {
       await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
       await client.query("COMMIT");
 
-      return { newItem, total: newTotal };
+      return { newItem };
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;
@@ -138,7 +138,7 @@ export class OrderService {
       await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
       await client.query("COMMIT");
 
-      return { updatedItem, total: newTotal };
+      return { updatedItem };
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;
@@ -169,7 +169,7 @@ export class OrderService {
       await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
       await client.query("COMMIT");
 
-      return { deletedItemId: itemId, total: newTotal };
+      return { deletedItemId: itemId };
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;
