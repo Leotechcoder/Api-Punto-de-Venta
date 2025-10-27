@@ -1,37 +1,31 @@
-import pool from "../../../shared/infrastructure/postgresConnection.js";
 import { ProductRepository } from "../../application/ProductRepository.js";
 
 export class DatabaseProductRepository extends ProductRepository {
-  async getAll() {
+  async getAll(client) {
     try {
-      
-      const result = await pool.query("SELECT * FROM public.products");
-      console.log(`El backend devuelve: ${result.rowCount} productos obtenidos desde el objeto`);
-      console.log(result.rows);
-      
+      const result = await client.query("SELECT * FROM public.products");
+      console.log(`✅ ${result.rowCount} productos obtenidos`);
       return result.rows;
-
     } catch (error) {
       console.error("❌ Error en getAll:", error);
       throw new Error("Error al obtener productos");
     }
   }
 
-  async getById(id) {
+  async getById(id, client) {
     try {
-      const result = await pool.query(
+      const result = await client.query(
         "SELECT * FROM public.products WHERE id_ = $1",
         [id]
       );
-      if (result.rows.length === 0) return null;
-      return result.rows[0];
+      return result.rows[0] || null;
     } catch (error) {
       console.error("❌ Error en getById:", error);
       throw new Error("Error al obtener producto");
     }
   }
 
-  async create(newProduct) {
+  async create(newProduct, client) {
     try {
       const columns = Object.keys(newProduct).join(", ");
       const placeholders = Object.keys(newProduct)
@@ -39,7 +33,7 @@ export class DatabaseProductRepository extends ProductRepository {
         .join(", ");
       const values = Object.values(newProduct);
 
-      const result = await pool.query(
+      const result = await client.query(
         `INSERT INTO public.products (${columns}) VALUES (${placeholders}) RETURNING *`,
         values
       );
@@ -50,36 +44,46 @@ export class DatabaseProductRepository extends ProductRepository {
     }
   }
 
-  async update(updateProduct) {
+  async update(id, data, client) {
     try {
-      // Generamos la cláusula SET y los valores
-      const setClause = Object.keys(updateProduct)
+      delete data.id;
+      delete data.id_;
+      delete data.created_at;
+      delete data.createdAt;
+
+      const setClause = Object.keys(data)
         .map((key, index) => `${key} = $${index + 1}`)
         .join(", ");
-      const values = Object.values(updateProduct);
+      const values = Object.values(data);
 
-      // El ID va al final para el WHERE
-      const result = await pool.query(
-        `UPDATE public.products SET ${setClause} WHERE id_ = $${values.length + 1} RETURNING *`,
-        [...values, updateProduct.id_]
+      if (!setClause) {
+        console.warn("⚠️ No hay campos válidos para actualizar en el producto");
+        return null;
+      }
+
+      const result = await client.query(
+        `UPDATE public.products SET ${setClause} WHERE id_ = $${
+          values.length + 1
+        } RETURNING *`,
+        [...values, id]
       );
-      
-      if (result.rows.length === 0) return null;
-      console.log(`Producto con ID ${updateProduct.id_} actualizado:`, result.rows[0]);
-      return result.rows[0]
+
+      if (!result.rows.length) return null;
+      console.log(`🛠 Producto con ID ${id} actualizado correctamente`);
+      return result.rows[0];
     } catch (error) {
       console.error("❌ Error en update:", error);
       throw new Error("Error al actualizar producto");
     }
   }
 
-  async delete(id) {
+  async delete(id, client) {
     try {
-      const result = await pool.query(
+      const result = await client.query(
         "DELETE FROM public.products WHERE id_ = $1",
         [id]
       );
-      return result.rowCount === 1;
+      return result.rowCount > 0;
     } catch (error) {
       console.error("❌ Error en delete:", error);
       throw new Error("Error al eliminar producto");

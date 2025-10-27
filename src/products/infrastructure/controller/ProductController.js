@@ -1,80 +1,57 @@
-import { ProductService } from "../../application/ProductService.js";
-import { DatabaseProductRepository } from "../adapters/DatabaseProductRepository.js";
+// src/modules/products/controller/ProductController.js
 import { validateProduct, validateProductUpdate } from "../../domain/productSchema.js";
-import { AccessControl } from "../../../shared/AccessControl.js";
-
-const productRepository = new DatabaseProductRepository();
-const productService = new ProductService(productRepository);
 
 export class ProductController {
-  static async getAll(req, res) {
+  constructor(productService) {
+    this.productService = productService;
+  }
+
+  getAll = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-
-      const products = await productService.getAllProducts();
-      if (!products.length) {
+      const products = await this.productService.getAllProducts();
+      if (!products.length)
         return res.status(404).json({ message: "No se encontraron productos" });
-      }
 
-      return res.status(200).json({
-        products: products,
-        message: "Operación completada",
-      });
+      res.status(200).json({ products, message: "Operación completada ✅" });
     } catch (error) {
       console.error("❌ Error en getAll:", error);
-      return res.status(500).json({ message: "Error interno del servidor", details: error.message });
+      res.status(500).json({ message: "Error interno del servidor", details: error.message });
     }
-  }
+  };
 
-  static async getById(req, res) {
+  getById = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-
-      const product = await productService.getProductById(req.params.id);
-      if (!product) {
+      const product = await this.productService.getProductById(req.params.id);
+      if (!product)
         return res.status(404).json({ message: "Producto no encontrado" });
-      }
 
-      return res.status(200).json({
-        data: product,
-        message: "Operación completada",
-      });
+      res.status(200).json({ product, message: "Producto encontrado correctamente 👌" });
     } catch (error) {
       console.error("❌ Error en getById:", error);
-      return res.status(500).json({ message: "Error interno del servidor", details: error.message });
+      res.status(500).json({ message: "Error interno del servidor", details: error.message });
     }
-  }
+  };
 
-  static async create(req, res) {
+  create = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-
       const validation = validateProduct(req.body);
-      console.log(validation.error);
       if (!validation.success) {
         return res.status(400).json({
           message: "Error al crear el producto",
           errors: validation.error.errors,
         });
       }
-      
-      const newProduct = await productService.createProduct(validation.data);
 
-      return res.status(201).json({
-        data: newProduct,
-        message: "Producto creado correctamente",
-      });
+      const newProduct = await this.productService.createProduct(validation.data);
+      res.status(201).json({ product: newProduct, message: "Producto creado correctamente 🎉" });
     } catch (error) {
       console.error("❌ Error en create:", error);
-      return res.status(500).json({ message: "Error interno del servidor", details: error.message });
+      res.status(500).json({ message: "Error interno del servidor", details: error.message });
     }
-  }
+  };
 
-  static async update(req, res) {
+  update = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-
-      // Convertimos `available` a boolean si viene como string
       if (typeof req.body.available === "string") {
         req.body.available = req.body.available === "true";
       }
@@ -87,34 +64,30 @@ export class ProductController {
         });
       }
 
-      const updatedProduct = await productService.updateProduct(req.params.id, validation.data);
-
-      if (!updatedProduct) {
+      const updatedProduct = await this.productService.updateProduct(req.params.id, validation.data);
+      if (!updatedProduct)
         return res.status(404).json({ message: "Producto no encontrado" });
-      }
-      return res.status(200).json({
-        data: updatedProduct,
+
+      res.status(200).json({
+        product: updatedProduct,
         message: "Producto actualizado correctamente 🤙",
       });
     } catch (error) {
       console.error("❌ Error en update:", error);
-      return res.status(500).json({ message: "Error interno del servidor", details: error.message });
+      res.status(500).json({ message: "Error interno del servidor", details: error.message });
     }
-  }
+  };
 
-  static async delete(req, res) {
+  delete = async (req, res) => {
     try {
-      if (!AccessControl.handleRequest(req, res)) return;
-
-      const deleted = await productService.deleteProduct(req.params.id);
-      if (!deleted) {
+      const deleted = await this.productService.deleteProduct(req.params.id);
+      if (!deleted)
         return res.status(404).json({ message: "Producto no encontrado" });
-      }
 
-      return res.status(200).json({ message: "Producto eliminado correctamente" });
+      res.status(200).json({ message: "Producto eliminado correctamente 🧹" });
     } catch (error) {
       console.error("❌ Error en delete:", error);
-      return res.status(500).json({ message: "Error interno del servidor", details: error.message });
+      res.status(500).json({ message: "Error interno del servidor", details: error.message });
     }
-  }
+  };
 }

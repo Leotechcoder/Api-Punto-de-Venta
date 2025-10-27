@@ -1,45 +1,98 @@
-// src/products/application/ProductService.js
+import pool from "../../shared/infrastructure/postgresConnection.js";
 import { idGenerator } from "../../shared/idGenerator.js";
 import { Product } from "../domain/Product.js";
-import { ProductFactory } from "../domain/productFactory.js";
 
 export class ProductService {
   constructor(productRepository) {
-    this.productRepository = productRepository;
+    this.repository = productRepository;
   }
 
-  // Obtener todos los productos (BD → dominio)
   async getAllProducts() {
-    const products = await this.productRepository.getAll();
-    return products.map((row) => new Product(row));
+    const client = await pool.connect();
+    try {
+      const products = await this.repository.getAll(client);
+      return products.map(Product.fromPersistence).map((p) => p.toDTO());
+    } catch (error) {
+      console.error("❌ [ProductService] Error en getAllProducts:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
-  // Obtener producto por ID
   async getProductById(id) {
-    const p = await this.productRepository.getById(id);
-    if (!p) throw new Error("Producto no encontrado");
-    return new Product(p);
+    const client = await pool.connect();
+    try {
+      const record = await this.repository.getById(id, client);
+      if (!record) return null;
+      return Product.fromPersistence(record).toDTO();
+    } catch (error) {
+      console.error("❌ [ProductService] Error en getProductById:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
-  // Crear producto nuevo (frontend → dominio → BD)
-  async createProduct(productData) {
-    const product = ProductFactory.create(productData, idGenerator);
-    const persistedProduct = await this.productRepository.create(product.toPersistence());
-    return new Product(persistedProduct); // devolvemos normalizado (camelCase)
+  async createProduct(data) {
+    const client = await pool.connect();
+    try {
+      const id = idGenerator("Pr");
+      const now = new Date().toISOString();
+
+      const product = new Product({
+        id,
+        ...data,
+        createdAt: now,
+        updatedAt: null,
+      });
+
+      const record = await this.repository.create(
+        product.toPersistenceForCreate(),
+        client
+      );
+      return Product.fromPersistence(record).toDTO();
+    } catch (error) {
+      console.error("❌ [ProductService] Error en createProduct:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
-  // Actualizar producto existente
-  async updateProduct(id, productData) {
-    const existingProduct = await this.productRepository.getById(id);
-    if (!existingProduct) throw new Error("Producto no encontrado");
+  async updateProduct(id, data) {
+    const client = await pool.connect();
+    try {
+      const existing = await this.repository.getById(id, client);
+      if (!existing) return null;
 
-    const updatedProduct = ProductFactory.prepareUpdate(id, productData, existingProduct);
-    const persistedProduct = await this.productRepository.update(updatedProduct.toPersistence());
-    return new Product(persistedProduct);
+      const product = Product.fromPersistence(existing);
+      product.updateInfo(data);
+
+      const updatedRecord = await this.repository.update(
+        id,
+        product.toPersistenceForUpdate(),
+        client
+      );
+
+      return Product.fromPersistence(updatedRecord).toDTO();
+    } catch (error) {
+      console.error("❌ [ProductService] Error en updateProduct:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
-  // Eliminar producto
   async deleteProduct(id) {
-    return await this.productRepository.delete(id);
+    const client = await pool.connect();
+    try {
+      return await this.repository.delete(id, client);
+    } catch (error) {
+      console.error("❌ [ProductService] Error en deleteProduct:", error);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }
