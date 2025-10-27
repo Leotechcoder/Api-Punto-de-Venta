@@ -32,8 +32,8 @@ export class ItemController {
     try {
       const { id } = req.params;
       const item = await this.itemService.getItemById(id);
-      if (!item) return res.status(404).json({ message: "Item not found" });
-      return res.status(200).json(item);
+      if (!item) return res.status(404).json({ message: "Item no encontrado 👎" });
+      return res.status(200).json({ item, message: "Item encontrado 🤙"});
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

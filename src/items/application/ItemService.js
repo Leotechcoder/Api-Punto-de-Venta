@@ -30,34 +30,4 @@ export class ItemService {
     return item.toDTO();
   }
 
-  // Obtener items por orderId (útil para GET /orders/:id, o internamente)
-  async getItemsByOrderId(orderId) {
-    const rows = await this.itemRepository.getByOrderId(orderId, pool);
-    return rows.map(Item.fromPersistence).map((i) => i.toDTO());
-  }
-
-  /* ---------- Métodos de modificación (deben ser llamados por OrderService dentro de transacción) ---------- */
-
-  // Actualiza campos del item. Se recomienda pasar client para usar la misma transacción de la orden.
-  async updateItemFields(itemId, fields, client = pool) {
-    // Validaciones de dominio leve: quantity/price si vienen
-    if (fields.quantity !== undefined) {
-      const q = Number(fields.quantity);
-      if (!Number.isFinite(q) || q < 0) throw new Error("Quantity must be a non-negative number");
-    }
-    if (fields.unit_price !== undefined) {
-      const p = Number(fields.unit_price);
-      if (!Number.isFinite(p) || p < 0) throw new Error("Unit price must be non-negative");
-    }
-
-    const updated = await this.itemRepository.updateFields(itemId, fields, client);
-    return Item.fromPersistence(updated).toDTO();
-  }
-
-  // Borrar item (dentro de la orden). Pasar client cuando se llame desde OrderService.
-  async deleteItem(itemId, client = pool) {
-    await this.itemRepository.delete(itemId, client);
-    return true;
-  }
-
 }
