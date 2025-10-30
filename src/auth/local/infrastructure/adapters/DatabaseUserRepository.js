@@ -1,5 +1,5 @@
-import { idGenerator } from "../../../shared/idGenerator.js";
-import pool from "../../../shared/infrastructure/postgresConnection.js";
+import { idGenerator } from "../../../../shared/idGenerator.js";
+import pool from "../../../../shared/infrastructure/postgresConnection.js";
 import { UserRepository } from "../../application/UserRepository.js";
 
 export class DatabaseUserRepository extends UserRepository {

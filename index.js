@@ -9,10 +9,10 @@ import dotenv from 'dotenv';
 // Import routes
 // import { setupAfipRoutes } from "./src/afip/infrastructure/http/routes/afipRoutes.js";
 // import { authRoutes } from "./src/auth/infrastructure/routes/AuthRoutes.js";
-import { localAuthRoutes } from "./src/auth/infrastructure/routes/LocalAuthRoutes.js";
-import { googleAuthRoutes } from "./src/auth/infrastructure/routes/GoogleAuthRoutes.js";
-import { authUserRoutes } from "./src/auth/infrastructure/routes/authUserRoutes.js";
-import { facebookAuthRoutes } from "./src/auth/infrastructure/routes/FacebookAuthRoutes.js";
+import { localAuthRoutes } from "./src/auth/local/infrastructure/routes/LocalAuthRoutes.js";
+import { googleAuthRoutes } from "./src/auth/google/infrastructure/routes/GoogleAuthRoutes.js";
+import { authUserRoutes } from "./src/auth/local/infrastructure/routes/authUserRoutes.js";
+import { facebookAuthRoutes } from "./src/auth/facebook/infrastructure/routes/FacebookAuthRoutes.js";
 import { routerUsers } from "./src/users/infrastructure/routes/UserRoutes.js";
 import { routerOrders } from "./src/orders/infrastructure/routes/OrderRoutes.js";
 import { routerProducts } from "./src/products/infrastructure/routes/ProductRoutes.js";
@@ -22,11 +22,12 @@ import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHa
 //Setup swagger
 import { setupSwagger } from "./src/shared/infrastructure/http/swagger/swagger.setup.js";
 // Setup authentication strategies
-import { GoogleAuthService } from "./src/auth/infrastructure/adapters/GoogleAuthService.js";
-import { FacebookAuthService } from "./src/auth/infrastructure/adapters/FacebookAuthService.js";
-import { PassportLocalAuthService } from "./src/auth/infrastructure/adapters/PassportLocalAuthService.js";
+import { GoogleAuthService } from "./src/auth/google/application/GoogleAuthService.js";
+import { FacebookAuthService } from "./src/auth/facebook/application/FacebookAuthService.js";
+import { PassportLocalAuthService } from "./src/auth/local/application/PassportLocalAuthService.js";
 import { ACCEPTED_ORIGINS } from "./src/shared/access.js";
-import { DatabaseUserRepository } from "./src/auth/infrastructure/adapters/DatabaseUserRepository.js";
+import { DatabaseUserRepository } from "./src/auth/local/infrastructure/adapters/DatabaseUserRepository.js";
+import { salesRoutes } from "./src/sales/infrastructure/routes/salesRoutes.js";
 
 // Capturar errores globales para debug
 process.on('uncaughtException', (err) => {
@@ -81,6 +82,7 @@ app.use("/api", routerUsers);
 app.use("/api", routerOrders);
 app.use("/api", routerProducts);
 app.use("/api", routerItems);
+app.use("/api/sales", salesRoutes)
 
 // Error handling
 app.use(errorHandler);

@@ -1,4 +1,4 @@
-import { AuthService } from "../adapters/LocalAuthService.js"
+import { AuthService } from "../../application/LocalAuthService.js"
 
 export class AuthController {
   constructor() {

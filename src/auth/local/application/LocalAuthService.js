@@ -1,6 +1,6 @@
 // src/auth/infrastructure/adapters/LocalAuthService.js
 import bcrypt from "bcrypt"
-import { DatabaseUserRepository } from "./DatabaseUserRepository"
+import { DatabaseUserRepository } from "../infrastructure/adapters/DatabaseUserRepository"
 
 export class AuthService {
   constructor() {
