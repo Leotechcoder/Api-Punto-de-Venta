@@ -28,15 +28,21 @@ export class OrderService {
       await client.query("BEGIN");
 
       const orderPersistence = Order.fromDTO(orderDTO).toPersistenceForCreate();
-      
-      const savedOrder = await this.orderRepository.create(orderPersistence, client);
+
+      const savedOrder = await this.orderRepository.create(
+        orderPersistence,
+        client
+      );
       const orderId = savedOrder.id_;
-      
 
       // Insertar items asociados
-      for (const it of (orderDTO.items || [])) {
-        const itemPersistence = Item.fromDTO(it).toPersistenceForCreate()
-        await this.itemRepository.createForOrder(orderId, itemPersistence, client);
+      for (const it of orderDTO.items || []) {
+        const itemPersistence = Item.fromDTO(it).toPersistenceForCreate();
+        await this.itemRepository.createForOrder(
+          orderId,
+          itemPersistence,
+          client
+        );
       }
 
       // Recalcular total
@@ -46,10 +52,37 @@ export class OrderService {
       );
       const newTotal = totalRes.rows[0].total;
 
-      await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
+      await this.orderRepository.update(
+        orderId,
+        { total_amount: newTotal },
+        client
+      );
       await client.query("COMMIT");
 
       return Order.fromPersistence(savedOrder).toDTO();
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
+  async updateOrder(id, updateDTO) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const dbOrder = await this.orderRepository.getById(id, client);
+      if (!dbOrder) throw new Error("Order not found");
+
+      const updateOrder = Order.fromDTO(updateDTO).toPersistenceForUpdate();
+
+      // ⚙️ Actualizamos solo los campos enviados
+      const updated = await this.orderRepository.update(id, updateOrder, client);
+
+      await client.query("COMMIT");
+      return Order.fromPersistence(updated).toDTO();
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;
@@ -76,19 +109,26 @@ export class OrderService {
     }
   }
 
-
   async addItemToOrder(orderId, itemDTO) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
-      const orderRow = await client.query(`SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`, [orderId]);
+      const orderRow = await client.query(
+        `SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`,
+        [orderId]
+      );
       if (orderRow.rowCount === 0) throw new Error("Order not found");
 
       const order = Order.fromPersistence(orderRow.rows[0]);
-      if (order.status !== "pending") throw new Error("Only pending orders can be modified");
+      if (order.status !== "pending")
+        throw new Error("Only pending orders can be modified");
 
-      const newItem = await this.itemRepository.createForOrder(orderId, itemDTO, client);
+      const newItem = await this.itemRepository.createForOrder(
+        orderId,
+        itemDTO,
+        client
+      );
 
       const totalRes = await client.query(
         `SELECT COALESCE(SUM(quantity * unit_price),0)::numeric AS total FROM public.order_items WHERE order_id = $1`,
@@ -96,7 +136,11 @@ export class OrderService {
       );
       const newTotal = totalRes.rows[0].total;
 
-      await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
+      await this.orderRepository.update(
+        orderId,
+        { total_amount: newTotal },
+        client
+      );
       await client.query("COMMIT");
 
       return { newItem };
@@ -110,24 +154,33 @@ export class OrderService {
 
   async updateItemInOrder(orderId, itemId, updateFields) {
     const client = await pool.connect();
-      console.log(updateFields);
+    console.log(updateFields);
 
     try {
       await client.query("BEGIN");
 
-      const orderRow = await client.query(`SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`, [orderId]);
+      const orderRow = await client.query(
+        `SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`,
+        [orderId]
+      );
       if (orderRow.rowCount === 0) throw new Error("Order not found");
 
       const order = Order.fromPersistence(orderRow.rows[0]);
-      if (order.status !== "pending") throw new Error("Only pending orders can be modified");
+      if (order.status !== "pending")
+        throw new Error("Only pending orders can be modified");
 
       const currentItem = await this.itemRepository.getById(itemId, client);
       if (!currentItem) throw new Error("Item not found");
 
-      const updateFieldsRef = Item.fromDTO(updateFields).toPersistenceForUpdate();
+      const updateFieldsRef =
+        Item.fromDTO(updateFields).toPersistenceForUpdate();
       console.log(updateFieldsRef);
-      
-      const updatedItem = await this.itemRepository.updateFields(itemId, updateFieldsRef, client);
+
+      const updatedItem = await this.itemRepository.updateFields(
+        itemId,
+        updateFieldsRef,
+        client
+      );
 
       const totalRes = await client.query(
         `SELECT COALESCE(SUM(quantity * unit_price),0)::numeric AS total FROM public.order_items WHERE order_id = $1`,
@@ -135,7 +188,11 @@ export class OrderService {
       );
       const newTotal = totalRes.rows[0].total;
 
-      await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
+      await this.orderRepository.update(
+        orderId,
+        { total_amount: newTotal },
+        client
+      );
       await client.query("COMMIT");
 
       return { updatedItem };
@@ -152,11 +209,15 @@ export class OrderService {
     try {
       await client.query("BEGIN");
 
-      const orderRow = await client.query(`SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`, [orderId]);
+      const orderRow = await client.query(
+        `SELECT * FROM public.orders WHERE id_ = $1 FOR UPDATE`,
+        [orderId]
+      );
       if (orderRow.rowCount === 0) throw new Error("Order not found");
 
       const order = Order.fromPersistence(orderRow.rows[0]);
-      if (order.status !== "pending") throw new Error("Only pending orders can be modified");
+      if (order.status !== "pending")
+        throw new Error("Only pending orders can be modified");
 
       await this.itemRepository.delete(itemId, client);
 
@@ -166,7 +227,11 @@ export class OrderService {
       );
       const newTotal = totalRes.rows[0].total;
 
-      await this.orderRepository.update(orderId, { total_amount: newTotal }, client);
+      await this.orderRepository.update(
+        orderId,
+        { total_amount: newTotal },
+        client
+      );
       await client.query("COMMIT");
 
       return { deletedItemId: itemId };

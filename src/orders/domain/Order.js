@@ -103,4 +103,11 @@ export class Order {
       delivery_type: this.deliveryType
     };
   }
+
+  toPersistenceForUpdate(){
+    return {
+      status: this.status,
+      delivery_type: this.deliveryType
+    };
+  }
 }

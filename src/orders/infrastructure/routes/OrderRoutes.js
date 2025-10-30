@@ -22,6 +22,7 @@ const orderController = new OrderController(orderService);
 routerOrders.get("/orders", orderController.getAll);
 routerOrders.get("/orders/:id", orderController.getById);
 routerOrders.post("/orders", orderController.create);
+routerOrders.patch("/orders/:id", orderController.updateOrder);
 routerOrders.delete("/orders/:id", orderController.delete);
 
 routerOrders.post("/orders/:id/items", orderController.addItem);

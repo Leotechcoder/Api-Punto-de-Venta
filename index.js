@@ -53,7 +53,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 const corsObject = {
   origin: ACCEPTED_ORIGINS, //Puedes cambiar esto para permitir solo una IP o un dominio
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
   credentials: true, //Esto habilita las cookies para las peticiones CORS
   preflightContinue: true, //Esto permite que el navegador permita la petición CORS
   optionsSuccessStatus: 200  //Si preflightContinue es true, esta cabecera se establece en 200
