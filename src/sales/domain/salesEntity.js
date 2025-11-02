@@ -8,6 +8,7 @@ export class SalesEntity {
     paymentInfo,
     deliveryType,
     createdAt,
+    updatedAt,
     paidAt,
     deliveredAt,
     cashRegisterId
@@ -20,6 +21,7 @@ export class SalesEntity {
     this.paymentInfo = paymentInfo
     this.deliveryType = deliveryType
     this.createdAt = createdAt
+    this.updatedAt = updatedAt
     this.paidAt = paidAt
     this.deliveredAt = deliveredAt
     this.cashRegisterId = cashRegisterId
@@ -35,6 +37,7 @@ export class SalesEntity {
       paymentInfo: dbRecord.payment_info,
       deliveryType: dbRecord.delivery_type,
       createdAt: dbRecord.created_at,
+      updatedAt: dbRecord.updated_at,
       paidAt: dbRecord.paid_at,
       deliveredAt: dbRecord.delivered_at,
       cashRegisterId: dbRecord.cash_register_id
