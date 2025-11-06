@@ -108,7 +108,7 @@ export class UserController {
 
       return res
         .status(200)
-        .json({ message: "Usuario eliminado correctamente 👌" });
+        .json({ deletedId: req.params.id, message: "Usuario eliminado correctamente 👌" });
     } catch (error) {
       console.error("❌ [UserController] Error en delete:", error);
       return res.status(500).json({

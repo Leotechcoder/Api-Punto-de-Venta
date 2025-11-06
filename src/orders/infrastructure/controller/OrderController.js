@@ -90,7 +90,7 @@ export class OrderController {
       const { id } = req.params;
       const deleted = await this.orderService.deleteOrder(id);
       if (deleted) {
-        res.status(200).json({ message: "Orden eliminada correctamente 🧺" });
+        res.status(200).json({ deletedId: id, message: "Orden eliminada correctamente 🧺" });
       } else {
         res.status(404).json({ message: "Orden no encontrada 🤔" });
       }

@@ -46,7 +46,7 @@
  *           example: "Juan Pérez"
  *         totalAmount:
  *           type: number
- *           example: 5000
+ *           example: 12000
  *         status:
  *           type: string
  *           enum: [pending, paid, delivered]
@@ -140,7 +140,7 @@
  *               properties:
  *                 totalEarnings:
  *                   type: number
- *                   example: 15000
+ *                   example: 35000
  *                 count:
  *                   type: integer
  *                   example: 3

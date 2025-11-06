@@ -239,6 +239,9 @@
  *             schema:
  *               type: object
  *               properties:
+ *                 deletedId:
+ *                   type: string
+ *                   example: "Us-4112025-34"
  *                 message:
  *                   type: string
  *                   example: "Usuario eliminado correctamente 👌"
