@@ -16,7 +16,6 @@ authUserRoutes.get("/auth/authenticate", (req, res) => {
 
     if (!isAuthenticated) {
       return res.status(401).json({
-        username: "invitado",
         error: true,
         message: "Debes iniciar sesión para acceder a esta ruta.",
       });
@@ -26,7 +25,6 @@ authUserRoutes.get("/auth/authenticate", (req, res) => {
 
     if (!user) {
       return res.status(401).json({
-        username: "invitado",
         error: true,
         message: "Sesión no válida o usuario no encontrado.",
       });
