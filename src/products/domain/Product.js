@@ -10,6 +10,7 @@ export class Product {
     imageUrl,
     description,
     available,
+    cloudinaryId,
     createdAt,
     updatedAt
   }) {
@@ -21,6 +22,7 @@ export class Product {
     this.imageUrl = imageUrl;
     this.description = description;
     this.available = available ?? true;
+    this.cloudinaryId = cloudinaryId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -40,6 +42,7 @@ export class Product {
       imageUrl: dbRecord.image_url,
       description: dbRecord.description,
       available: dbRecord.available,
+      cloudinaryId: dbRecord.cloudinary_id,
       createdAt: dbRecord.created_at,
       updatedAt: dbRecord.updated_at
     });
@@ -58,6 +61,7 @@ export class Product {
       imageUrl: dto.imageUrl,
       description: dto.description,
       available: dto.available,
+      cloudinaryId: dto.cloudinaryId,
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt
     });
@@ -65,14 +69,15 @@ export class Product {
 
   // ✅ MÉTODOS DE DOMINIO
 
-  updateInfo({ name, price, category, stock, description, imageUrl, available }) {
-    if (name) this.name = name;
+  updateInfo({ name, price, category, stock, imageUrl, description, available, cloudinaryId }) {
+    if (name !== undefined) this.name = name;
     if (price !== undefined && price >= 0) this.price = price;
-    if (category) this.category = category;
+    if (category !== undefined) this.category = category;
     if (stock !== undefined && stock >= 0) this.stock = stock;
-    if (description !== undefined) this.description = description;
     if (imageUrl !== undefined) this.imageUrl = imageUrl;
+    if (description !== undefined) this.description = description;
     if (available !== undefined) this.available = available;
+    if (cloudinaryId !== undefined) this.cloudinaryId = cloudinaryId;
     this.updatedAt = new Date().toISOString();
   }
 
@@ -99,6 +104,7 @@ export class Product {
       imageUrl: this.imageUrl,
       description: this.description,
       available: this.available,
+      cloudinaryId: this.cloudinaryId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };
@@ -114,6 +120,7 @@ export class Product {
       image_url: this.imageUrl,
       description: this.description,
       available: this.available,
+      cloudinary_id: this.cloudinaryId,
       created_at: this.createdAt,
       updated_at: this.updatedAt
     };
@@ -133,6 +140,7 @@ export class Product {
       image_url: this.imageUrl,
       description: this.description,
       available: this.available,
+      cloudinary_id: this.cloudinaryId,
       created_at: this.createdAt,
       updated_at: this.updatedAt
     };
@@ -147,6 +155,7 @@ export class Product {
       image_url: this.imageUrl,
       description: this.description,
       available: this.available,
+      cloudinary_id: this.cloudinaryId,
       created_at: this.createdAt,
       updated_at: this.updatedAt
     };

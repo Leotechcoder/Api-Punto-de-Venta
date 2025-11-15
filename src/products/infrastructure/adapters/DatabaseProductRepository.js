@@ -26,6 +26,8 @@ export class DatabaseProductRepository extends ProductRepository {
   }
 
   async create(newProduct, client) {
+    console.log(newProduct);
+    
     try {
       const columns = Object.keys(newProduct).join(", ");
       const placeholders = Object.keys(newProduct)
@@ -49,7 +51,7 @@ export class DatabaseProductRepository extends ProductRepository {
       delete data.id;
       delete data.id_;
       delete data.created_at;
-      delete data.createdAt;
+      delete data.createdAt;      
 
       const setClause = Object.keys(data)
         .map((key, index) => `${key} = $${index + 1}`)

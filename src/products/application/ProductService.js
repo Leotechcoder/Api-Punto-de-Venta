@@ -66,9 +66,11 @@ export class ProductService {
       const existing = await this.repository.getById(id, client);
       if (!existing) return null;
 
+      
       const product = Product.fromPersistence(existing);
       product.updateInfo(data);
-
+      
+      console.log(product);
       const updatedRecord = await this.repository.update(
         id,
         product.toPersistenceForUpdate(),

@@ -7,8 +7,9 @@ const productSchema = z.object({
   category: z.string().min(1, "La categoría es obligatoria"),
   stock: z.number().int().nonnegative("El stock no puede ser negativo"),
   imageUrl: z.string().url("Debe ser una URL válida").optional(),
-  available: z.boolean().default(true),
   description: z.string().optional(),
+  available: z.boolean().default(true),
+  cloudinaryId: z.string(),
 });
 
 const productSchemaUpdate = productSchema.partial();
