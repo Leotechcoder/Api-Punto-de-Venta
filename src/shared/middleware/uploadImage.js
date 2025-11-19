@@ -3,33 +3,39 @@ import cloudinary from "../config/cloudinary.js";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Subida con stream (funciona en Railway)
-export const uploadToCloudinary = ({file, name}) => {
+const toUnderscore = (text) => {
+  return text.trim().replace(/\s+/g, "_").toLowerCase();
+};
 
-  function toUnderscore(text) {
-    const textMayus =  text.trim().replace(/\s+/g, "_");
-    return textMayus.toLowerCase();
-  }
-  const id = toUnderscore(name);
+// Genera un ID único para cada imagen
+const makePublicId = (name) => {
+  const base = toUnderscore(name);
+  return `${base}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+};
 
+// Subida a Cloudinary con Stream
+export const uploadToCloudinary = ({ file, name }) => {
   return new Promise((resolve, reject) => {
     if (!file) return resolve(null);
 
+    const publicId = makePublicId(name);
+
     const options = {
       folder: "productos",
-      public_id: id,
-      unique_filename: false,
-      overwrite: true,
+      public_id: publicId,
+      unique_filename: true,
+      overwrite: false,
+      resource_type: "image",
     };
 
-    const stream = cloudinary.uploader.upload_stream( 
-      options,
-      (error, result) => {
-        if (error) reject(error);
-        else resolve({url: result.secure_url, id: result.public_id });
-      }
-    );
-    
+    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) reject(error);
+      else resolve({
+        url: result.secure_url,
+        id: result.public_id,
+      });
+    });
+
     stream.end(file.buffer);
   });
 };

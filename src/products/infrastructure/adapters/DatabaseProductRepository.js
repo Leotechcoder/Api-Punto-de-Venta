@@ -3,8 +3,9 @@ import { ProductRepository } from "../../application/ProductRepository.js";
 export class DatabaseProductRepository extends ProductRepository {
   async getAll(client) {
     try {
-      const result = await client.query("SELECT * FROM public.products");
-      console.log(`✅ ${result.rowCount} productos obtenidos`);
+      const result = await client.query(`
+        SELECT * FROM public.products
+      `);
       return result.rows;
     } catch (error) {
       console.error("❌ Error en getAll:", error);
@@ -15,7 +16,7 @@ export class DatabaseProductRepository extends ProductRepository {
   async getById(id, client) {
     try {
       const result = await client.query(
-        "SELECT * FROM public.products WHERE id_ = $1",
+        `SELECT * FROM public.products WHERE id_ = $1`,
         [id]
       );
       return result.rows[0] || null;
@@ -26,8 +27,6 @@ export class DatabaseProductRepository extends ProductRepository {
   }
 
   async create(newProduct, client) {
-    console.log(newProduct);
-    
     try {
       const columns = Object.keys(newProduct).join(", ");
       const placeholders = Object.keys(newProduct)
@@ -51,28 +50,25 @@ export class DatabaseProductRepository extends ProductRepository {
       delete data.id;
       delete data.id_;
       delete data.created_at;
-      delete data.createdAt;      
+      delete data.createdAt;
 
       const setClause = Object.keys(data)
         .map((key, index) => `${key} = $${index + 1}`)
         .join(", ");
+
       const values = Object.values(data);
 
-      if (!setClause) {
-        console.warn("⚠️ No hay campos válidos para actualizar en el producto");
-        return null;
-      }
-
       const result = await client.query(
-        `UPDATE public.products SET ${setClause} WHERE id_ = $${
-          values.length + 1
-        } RETURNING *`,
+        `
+        UPDATE public.products
+        SET ${setClause}
+        WHERE id_ = $${values.length + 1}
+        RETURNING *
+        `,
         [...values, id]
       );
 
-      if (!result.rows.length) return null;
-      console.log(`🛠 Producto con ID ${id} actualizado correctamente`);
-      return result.rows[0];
+      return result.rows[0] || null;
     } catch (error) {
       console.error("❌ Error en update:", error);
       throw new Error("Error al actualizar producto");
@@ -82,7 +78,7 @@ export class DatabaseProductRepository extends ProductRepository {
   async delete(id, client) {
     try {
       const result = await client.query(
-        "DELETE FROM public.products WHERE id_ = $1",
+        `DELETE FROM public.products WHERE id_ = $1`,
         [id]
       );
       return result.rowCount > 0;
