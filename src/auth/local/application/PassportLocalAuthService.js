@@ -9,14 +9,13 @@ export class PassportLocalAuthService {
       new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
         try {
           const user = await userRepository.findByEmail(email)
+          console.log('Ingreso el usuario: '+ user.username)
           if (!user) {
-            console.log("aca 1")
             return done(null, false, { message: "Invalid email or password" })
           }
 
           const isValid = await bcrypt.compare(password, user.password_)
           if (!isValid) {
-            console.log("aca 2")
             return done(null, false, { message: "Invalid email or password" })
           }
 

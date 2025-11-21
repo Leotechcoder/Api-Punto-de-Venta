@@ -12,17 +12,14 @@ export class ProductService {
     const client = await pool.connect();
     try {
       const products = await this.repository.getAll(client);
-      console.log('products', products);
       
       for (let product of products) {
         const imgs = await this.images.getImagesByProduct(product.id_, client);
-        console.log('aca no',JSON.stringify(imgs, null, 2));
         
         product.images = imgs;
       }
 
       const productsNew = products.map(Product.fromPersistence).map((p) => p.toDTO());
-      console.log(productsNew);
       return productsNew;
     } finally {
       client.release();
