@@ -5,6 +5,8 @@ import {
   validateProductUpdate,
 } from "../../domain/productSchema.js";
 
+import { getIO } from "../../../config/socket.js";
+
 export class ProductController {
   constructor(productService) {
     this.productService = productService;
@@ -67,7 +69,7 @@ export class ProductController {
         validation.data,
         uploadedImages
       );
-
+      
       res.status(201).json({
         product: newProduct,
         message: "Producto creado exitosamente!",
@@ -81,6 +83,7 @@ export class ProductController {
     try {
       const id = req.params.id;
       const body = req.body;
+      console.log('body:', body);
 
       if (typeof body.available === "string") {
         body.available = body.available === "true";
@@ -94,8 +97,9 @@ export class ProductController {
         description: body.description,
         available: body.available,
       };
-
+      
       const validation = validateProductUpdate(updatedData);
+      console.log('validation:', validation);
       if (!validation.success) {
         return res.status(400).json({
           message: "Datos inválidos",
@@ -127,6 +131,10 @@ export class ProductController {
         imagesToDelete,
         newOrder
       );
+
+      getIO().emit("product:updated", updated);
+
+      
 
       res.status(200).json({
         product: updated,

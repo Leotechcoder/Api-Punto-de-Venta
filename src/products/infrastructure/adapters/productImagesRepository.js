@@ -10,7 +10,9 @@ export class ProductImagesRepository {
         `,
         [productId]
       );
+      
       return result.rows;
+      
     } catch (error) {
       console.error("❌ Error en getImagesByProduct:", error);
       throw new Error("Error al obtener imágenes del producto");

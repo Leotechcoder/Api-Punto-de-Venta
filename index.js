@@ -19,6 +19,10 @@ import { routerProducts } from "./src/products/infrastructure/routes/ProductRout
 import { routerItems } from "./src/items/infrastructure/routes/itemRoutes.js"
 import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHandler.js";
 
+
+//Setup socket.io
+import { initSocket } from "./src/config/socket.js";
+import http from "http";
 //Setup swagger
 import { setupSwagger } from "./src/shared/infrastructure/http/swagger/swagger.setup.js";
 // Setup authentication strategies
@@ -90,8 +94,12 @@ app.use(errorHandler);
 // Setup swagger
 setupSwagger(app);
 
+//Setup server with socket.io
+const httpServer = http.createServer(app);
+initSocket(httpServer);
+
 // Start server
 
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${process.env.PORT}`);
+httpServer.listen(process.env.PORT, () => {
+  console.log(`🚀 API + Socket corriendo en el puerto ${process.env.PORT}`);
 });

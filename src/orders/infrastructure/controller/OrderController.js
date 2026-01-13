@@ -5,6 +5,8 @@ import {
   validateOrderUpdate,
 } from "../../domain/orderSchema.js"; // Ajustá el path según tu estructura
 
+import { getIO } from "../../../config/socket.js";
+
 export class OrderController {
   constructor(orderService) {
     this.orderService = orderService;
@@ -46,6 +48,7 @@ export class OrderController {
       }
 
       const order = await this.orderService.createOrder(validation.data);
+      getIO().emit("order:new", order);
       res.status(201).json({ order, message: "Orden creada correctamente 🤘" });
     } catch (err) {
       console.error("Error creating order:", err);

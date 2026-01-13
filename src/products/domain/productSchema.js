@@ -9,7 +9,7 @@ const imageSchema = z.object({
 });
 
 const productSchema = z.object({
-  name: z.string().min(1, "El nombre es obligatorio"),
+  name_: z.string().min(1, "El nombre es obligatorio"),
   price: z.number().nonnegative("El precio no puede ser negativo"),
   category: z.string().min(1, "La categoría es obligatoria"),
   stock: z.number().int().nonnegative("El stock no puede ser negativo"),
