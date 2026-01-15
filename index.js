@@ -19,6 +19,9 @@ import { routerProducts } from "./src/products/infrastructure/routes/ProductRout
 import { routerItems } from "./src/items/infrastructure/routes/itemRoutes.js"
 import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHandler.js";
 
+// Imports del store
+import routerStoreProducts from "./src/products/infrastructure/routes/storeProductRoutes.js";
+
 
 //Setup socket.io
 import { initSocket } from "./src/config/socket.js";
@@ -87,6 +90,9 @@ app.use("/api", routerOrders);
 app.use("/api", routerProducts);
 app.use("/api", routerItems);
 app.use("/api/sales", salesRoutes)
+
+// Store routes
+app.use("/store", routerStoreProducts);
 
 // Error handling
 app.use(errorHandler);

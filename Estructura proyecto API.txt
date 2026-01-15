@@ -1,0 +1,154 @@
+Api-Punto-de-Venta/
+├─ .env
+├─ .git/
+├─ .gitignore
+├─ cambios.txt
+├─ dependencias.txt
+├─ index.js
+├─ node_modules/
+├─ package-lock.json
+├─ package.json
+├─ public/
+├─ punto-venta-structure.txt
+└─ src/
+   ├─ afip/
+   │  ├─ application/
+   │  │  ├─ ports/
+   │  │  │  ├─ repositories/
+   │  │  │  └─ services/
+   │  │  └─ useCases/
+   │  │     ├─ CreateInvoice.js
+   │  │     └─ GetLastVoucher.js
+   │  ├─ domain/
+   │  │  ├─ entities/
+   │  │  │  └─ Invoice.js
+   │  │  └─ valueObjects/
+   │  │     └─ InvoiceNumber.js
+   │  └─ infrastructure/
+   │     ├─ config/
+   │     │  └─ afipConfig.js
+   │     ├─ http/
+   │     │  ├─ controllers/
+   │     │  ├─ middlewares/
+   │     │  └─ routes/
+   │     ├─ repositories/
+   │     │  └─ PostgresInvoiceRepository.js
+   │     ├─ services/
+   │     │  ├─ AfipServiceImpl.js
+   │     │  └─ AuthServiceImpl.js
+   │     ├─ webServices/
+   │     └─ tarea.txt
+   ├─ auth/
+   │  ├─ facebook/
+   │  │  ├─ application/
+   │  │  │  └─ FacebookAuthService.js
+   │  │  └─ infrastructure/
+   │  │     └─ routes/
+   │  ├─ google/
+   │  │  ├─ application/
+   │  │  │  └─ GoogleAuthService.js
+   │  │  └─ infrastructure/
+   │  │     └─ routes/
+   │  └─ local/
+   │     ├─ application/
+   │     │  ├─ AutenticateUser.js
+   │     │  ├─ LocalAuthService.js
+   │     │  ├─ ManualLogin.js
+   │     │  ├─ ManualRegister.js
+   │     │  ├─ PassportLocalAuthService.js
+   │     │  ├─ RegisterUser.js
+   │     │  └─ UserRepository.js
+   │     ├─ domain/
+   │     │  └─ User.js
+   │     └─ infrastructure/
+   │        ├─ adapters/
+   │        ├─ controller/
+   │        └─ routes/
+   ├─ authorization/
+   │  ├─ application/
+   │  │  ├─ authorizationService.js
+   │  │  ├─ permissionRepsitory.js
+   │  │  └─ roleRepository.js
+   │  ├─ domain/
+   │  │  ├─ permissionEntity.js
+   │  │  └─ roleEntity.js
+   │  └─ infrastructure/
+   │     ├─ adapters/
+   │     ├─ controllers/
+   │     └─ routes/
+   ├─ config/
+   │  └─ socket.js
+   ├─ items/
+   │  ├─ application/
+   │  │  ├─ ItemRepository.js
+   │  │  └─ ItemService.js
+   │  ├─ domain/
+   │  │  ├─ Item.js
+   │  │  └─ itemsSchema.js
+   │  └─ infrastructure/
+   │     ├─ adapters/
+   │     ├─ controller/
+   │     ├─ docs/
+   │     └─ routes/
+   ├─ orders/
+   │  ├─ application/
+   │  │  ├─ OrderRepository.js
+   │  │  └─ OrderService.js
+   │  ├─ domain/
+   │  │  ├─ Order.js
+   │  │  └─ orderSchema.js
+   │  └─ infrastructure/
+   │     ├─ adapters/
+   │     ├─ controller/
+   │     ├─ docs/
+   │     └─ routes/
+   ├─ products/
+   │  ├─ application/
+   │  │  ├─ ProductRepository.js
+   │  │  └─ ProductService.js
+   │  ├─ domain/
+   │  │  ├─ Product.js
+   │  │  └─ productSchema.js
+   │  └─ infrastructure/
+   │     ├─ adapters/
+   │     ├─ controller/
+   │     ├─ docs/
+   │     └─ routes/
+   ├─ sales/
+   │  ├─ application/
+   │  │  └─ salesService.js
+   │  ├─ domain/
+   │  │  ├─ salesEntity.js
+   │  │  └─ salesRepository.js
+   │  └─ infrastructure/
+   │     ├─ adapters/
+   │     ├─ controllers/
+   │     ├─ docs/
+   │     └─ routes/
+   ├─ shared/
+   │  ├─ access.js
+   │  ├─ accessControlV2.js
+   │  ├─ config.js
+   │  ├─ idGenerator.js
+   │  ├─ config/
+   │  │  └─ cloudinary.js
+   │  ├─ infrastructure/
+   │  │  ├─ postgresConnection.js
+   │  │  └─ http/
+   │  │     └─ swagger/
+   │  └─ middleware/
+   │     ├─ authMiddlewareV2.js
+   │     ├─ sessionMiddleware.js
+   │     └─ uploadImage.js
+   └─ users/
+      ├─ application/
+      │  ├─ UserRepository.js
+      │  └─ UserService.js
+      ├─ domain/
+      │  ├─ User.js
+      │  └─ userSchema.js
+      └─ infrastructure/
+         ├─ adapters/
+         ├─ controller/
+         ├─ docs/
+         └─ routes/
