@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { StoreProductController } from "../controllers/StoreProductController.js";
+import { StoreProductController } from "../controller/StoreProductController.js";
 import { ProductService } from "../../application/ProductService.js";
 import { DatabaseProductRepository } from "../adapters/DatabaseProductRepository.js";
 import { ProductImagesRepository } from "../adapters/ProductImagesRepository.js";

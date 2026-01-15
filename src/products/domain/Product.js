@@ -9,6 +9,7 @@ export class Product {
     stock,
     description,
     available,
+    bestSeller,
     images = [],
     createdAt,
     updatedAt,
@@ -20,7 +21,8 @@ export class Product {
     this.stock = stock;
     this.description = description;
     this.available = available ?? true;
-    this.images = images; // ← ahora maneja array de imágenes
+    this.bestSeller = bestSeller ?? false;
+    this.images = images;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -35,7 +37,8 @@ export class Product {
       stock: dbRecord.stock,
       description: dbRecord.description,
       available: dbRecord.available,
-      images: dbRecord.images || [], // ← añadimos imágenes
+      bestSeller: dbRecord.best_seller,
+      images: dbRecord.images || [],
       createdAt: dbRecord.created_at,
       updatedAt: dbRecord.updated_at,
     });
@@ -51,6 +54,7 @@ export class Product {
       stock: dto.stock,
       description: dto.description,
       available: dto.available,
+      bestSeller: dto.bestSeller,
       images: dto.images || [],
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,
@@ -58,13 +62,23 @@ export class Product {
   }
 
   // ---------- DOMINIO ----------
-  updateInfo({ name_, price, category, stock, description, available }) {
-    if (name_ !== undefined) this.name = name_;
+  updateInfo({
+    name,
+    price,
+    category,
+    stock,
+    description,
+    available,
+    bestSeller,
+  }) {
+    if (name !== undefined) this.name = name;
     if (price !== undefined && price >= 0) this.price = price;
     if (category !== undefined) this.category = category;
     if (stock !== undefined && stock >= 0) this.stock = stock;
     if (description !== undefined) this.description = description;
     if (available !== undefined) this.available = available;
+    if (bestSeller !== undefined) this.bestSeller = bestSeller;
+
     this.updatedAt = new Date().toISOString();
   }
 
@@ -78,6 +92,7 @@ export class Product {
       stock: this.stock,
       description: this.description,
       available: this.available,
+      bestSeller: this.bestSeller,
       images: this.images,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
@@ -93,6 +108,7 @@ export class Product {
       stock: this.stock,
       description: this.description,
       available: this.available,
+      best_seller: this.bestSeller,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     };
@@ -106,7 +122,7 @@ export class Product {
       stock: this.stock,
       description: this.description,
       available: this.available,
-      created_at: this.createdAt,
+      best_seller: this.bestSeller,
       updated_at: this.updatedAt,
     };
   }

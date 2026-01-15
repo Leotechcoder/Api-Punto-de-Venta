@@ -14,7 +14,7 @@ export const routerProducts = Router();
 
 // Middlewares globales de acceso y autenticación
 routerProducts.use(AccessControl.corsHandler);
-// routerProducts.use(AuthMiddleware.ensureAuthenticated);
+routerProducts.use(AuthMiddleware.ensureAuthenticated);
 
 // Inyección de dependencias
 const productRepository = new DatabaseProductRepository();

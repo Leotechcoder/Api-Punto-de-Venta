@@ -92,7 +92,7 @@ app.use("/api", routerItems);
 app.use("/api/sales", salesRoutes)
 
 // Store routes
-app.use("/store", routerStoreProducts);
+app.use("/store", cors(corsObject), routerStoreProducts);
 
 // Error handling
 app.use(errorHandler);
