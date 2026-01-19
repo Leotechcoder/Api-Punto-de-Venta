@@ -2,7 +2,7 @@ import { Router } from "express";
 import { StoreProductController } from "../controller/StoreProductController.js";
 import { ProductService } from "../../application/ProductService.js";
 import { DatabaseProductRepository } from "../adapters/DatabaseProductRepository.js";
-import { ProductImagesRepository } from "../adapters/ProductImagesRepository.js";
+import { ProductImagesRepository } from "../adapters/productImagesRepository.js";
 import { AccessControl } from "../../../shared/accessControlV2.js";
 
 const routerStoreProducts = Router();
