@@ -23,6 +23,7 @@ export class DatabaseOrderRepository extends OrderRepository {
       `INSERT INTO public.orders (${cols}) VALUES (${ph}) RETURNING *`,
       vals
     );
+    console.log("Created Order:", result.rows[0]);
     return result.rows[0];
   }
 

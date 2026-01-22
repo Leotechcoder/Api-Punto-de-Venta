@@ -1,10 +1,11 @@
 export class Order {
-  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType }) {
+  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, deliveryAddress }) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
     this.totalAmount = totalAmount;
     this.status = status || "pending";
+    this.deliveryAddress = deliveryAddress;
     this.items = items || [];
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -23,7 +24,8 @@ export class Order {
       createdAt: dbRecord.created_at,
       updatedAt: dbRecord.updated_at,
       paymentInfo: dbRecord.payment_info,
-      deliveryType: dbRecord.delivery_type
+      deliveryType: dbRecord.delivery_type,
+      deliveryAddress: dbRecord.delivery_address
     });
   }
 
@@ -37,7 +39,8 @@ export class Order {
       items: dto.items,
       createdAt: dto.createdAt,
       paymentInfo: dto.paymentInfo,
-      deliveryType:dto.deliveryType
+      deliveryType:dto.deliveryType,
+      deliveryAddress: dto.deliveryAddress
     });
   }
 
@@ -72,7 +75,8 @@ export class Order {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       paymentInfo: this.paymentInfo,
-      deliveryType: this.deliveryType
+      deliveryType: this.deliveryType,
+      deliveryAddress: this.deliveryAddress
     };
   }
 
@@ -85,7 +89,8 @@ export class Order {
       status: this.status,
       created_at: this.createdAt,
       payment_info: this.paymentInfo,
-      delivery_type: this.deliveryType
+      delivery_type: this.deliveryType,
+      delivery_address: this.deliveryAddress
     };
   }
 
@@ -100,14 +105,16 @@ export class Order {
       total_amount: this.totalAmount,
       status: this.status,
       payment_info: this.paymentInfo,
-      delivery_type: this.deliveryType
+      delivery_type: this.deliveryType,
+      delivery_address: this.deliveryAddress
     };
   }
 
   toPersistenceForUpdate(){
     return {
       status: this.status,
-      delivery_type: this.deliveryType
+      delivery_type: this.deliveryType,
+      delivery_address: this.deliveryAddress
     };
   }
 }

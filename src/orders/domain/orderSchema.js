@@ -67,6 +67,7 @@ export const orderSchema = z.object({
   ]),
   paymentInfo: paymentInfoSchema,
   deliveryType: z.string().min(3, "El tipo de entrega es obligatorio"),
+  deliveryAddress: z.string(),
 });
 
 // =========================

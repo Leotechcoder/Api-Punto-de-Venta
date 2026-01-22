@@ -34,8 +34,7 @@ export class OrderController {
     try {
       // ✅ Validación con Zod
       const validation = validateOrder(req.body);
-      console.log("Validation result:", validation);
-
+      
       if (!validation.success) {
         console.log("Validation errors:", validation.error.errors);
         return res.status(400).json({
@@ -46,9 +45,11 @@ export class OrderController {
           })),
         });
       }
-
+      
       const order = await this.orderService.createOrder(validation.data);
+      
       getIO().emit("order:new", order);
+
       res.status(201).json({ order, message: "Orden creada correctamente 🤘" });
     } catch (err) {
       console.error("Error creating order:", err);
