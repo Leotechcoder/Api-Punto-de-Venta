@@ -1,10 +1,11 @@
 export class Order {
-  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, deliveryAddress }) {
+  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, paidAt, deliveryAddress }) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
     this.totalAmount = totalAmount;
     this.status = status || "pending";
+    this.paidAt = paidAt;
     this.deliveryAddress = deliveryAddress;
     this.items = items || [];
     this.createdAt = createdAt;
@@ -23,6 +24,7 @@ export class Order {
       status: dbRecord.status,
       createdAt: dbRecord.created_at,
       updatedAt: dbRecord.updated_at,
+      paidAt: dbRecord.paid_at,
       paymentInfo: dbRecord.payment_info,
       deliveryType: dbRecord.delivery_type,
       deliveryAddress: dbRecord.delivery_address
@@ -36,6 +38,7 @@ export class Order {
       userName: dto.userName,
       totalAmount: dto.totalAmount,
       status: dto.status,
+      paidAt: dto.paidAt,
       items: dto.items,
       createdAt: dto.createdAt,
       paymentInfo: dto.paymentInfo,
@@ -72,6 +75,7 @@ export class Order {
       userName: this.userName,
       totalAmount: this.totalAmount,
       status: this.status,
+      paidAt: this.paidAt,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       paymentInfo: this.paymentInfo,
@@ -113,8 +117,9 @@ export class Order {
   toPersistenceForUpdate(){
     return {
       status: this.status,
-      delivery_type: this.deliveryType,
-      delivery_address: this.deliveryAddress
+      total_amount: this.totalAmount,
+      paid_at: this.paidAt,
+      payment_info: this.paymentInfo, 
     };
   }
 }

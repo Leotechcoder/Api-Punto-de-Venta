@@ -22,6 +22,7 @@ import { errorHandler } from "./src/afip/infrastructure/http/middlewares/errorHa
 // Imports del store
 import routerStoreProducts from "./src/products/infrastructure/routes/storeProductRoutes.js";
 import routerOrdersStore from "./src/orders/infrastructure/routes/orderRoutesStore.js";
+import { routerItemsStore } from "./src/items/infrastructure/routes/itemRoutesStore.js";
 
 
 //Setup socket.io
@@ -95,6 +96,7 @@ app.use("/api/sales", salesRoutes)
 // Store routes
 app.use("/store", cors(corsObject), routerStoreProducts);
 app.use("/store", cors(corsObject), routerOrdersStore);
+app.use("/store", cors(corsObject), routerItemsStore);
 
 // Error handling
 app.use(errorHandler);

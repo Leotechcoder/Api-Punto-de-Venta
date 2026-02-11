@@ -17,6 +17,8 @@ const orderService = new OrderService(orderRepository, itemRepository);
 const orderController = new OrderController(orderService);
 
 // Rutas
+routerOrdersStore.get("/orders", orderController.getAll);
 routerOrdersStore.post("/orders", orderController.create);
+routerOrdersStore.patch("/orders/:id", orderController.updateOrder);
 
 export default routerOrdersStore;

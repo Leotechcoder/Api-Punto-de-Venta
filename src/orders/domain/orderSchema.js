@@ -66,6 +66,7 @@ export const orderSchema = z.object({
     z.number().nonnegative("El monto total no puede ser negativo")
   ]),
   paymentInfo: paymentInfoSchema,
+  paidAt: z.string().optional(),
   deliveryType: z.string().min(3, "El tipo de entrega es obligatorio"),
   deliveryAddress: z.string(),
 });
