@@ -24,6 +24,9 @@ import routerStoreProducts from "./src/products/infrastructure/routes/storeProdu
 import routerOrdersStore from "./src/orders/infrastructure/routes/orderRoutesStore.js";
 import { routerItemsStore } from "./src/items/infrastructure/routes/itemRoutesStore.js";
 
+// Import n8n routes
+import n8nRoutes from "./src/integrations/n8n/routes/n8nRoutes.js";
+
 
 //Setup socket.io
 import { initSocket } from "./src/config/socket.js";
@@ -97,6 +100,9 @@ app.use("/api/sales", salesRoutes)
 app.use("/store", cors(corsObject), routerStoreProducts);
 app.use("/store", cors(corsObject), routerOrdersStore);
 app.use("/store", cors(corsObject), routerItemsStore);
+
+// n8n routes
+app.use("/n8n", cors(corsObject), n8nRoutes);
 
 // Error handling
 app.use(errorHandler);
