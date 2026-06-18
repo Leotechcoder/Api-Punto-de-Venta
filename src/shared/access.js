@@ -7,5 +7,6 @@ export const ACCEPTED_ORIGINS = [
   "http://localhost:5173/admin/home",
   "https://app-dashboard-xi.vercel.app",
   "https://pizza-app-three-phi.vercel.app",
-  "https://charming-vision-production.up.railway.app"
+  "https://charming-vision-production.up.railway.app",
+  "https://api-pizzeria-bztw.onrender.com",
 ];
