@@ -7,6 +7,8 @@ import { DatabaseProductRepository } from "../../../products/infrastructure/adap
 import { ProductImagesRepository } from "../../../products/infrastructure/adapters/productImagesRepository.js";
 
 import { N8NProductController } from "../controllers/N8NProductController.js";
+import { N8NOrderController } from "../controllers/N8NOrderController.js";
+import crypto from "crypto";
 
 import { OrderController } from "../../../orders/infrastructure/controller/OrderController.js";
 import { OrderService } from "../../../orders/application/OrderService.js";
@@ -17,38 +19,24 @@ const router = Router();
 
 router.use(apiKeyMiddleware);
 
+// ✅ Primero repositories
 const orderRepository = new DatabaseOrderRepository();
 const itemRepository = new DatabaseItemRepository();
-
-const orderService = new OrderService(
-  orderRepository,
-  itemRepository
-);
-
-const orderController = new OrderController(
-  orderService
-);
-
 const productRepository = new DatabaseProductRepository();
 const productImagesRepository = new ProductImagesRepository();
 
-const productService = new ProductService(
-  productRepository,
-  productImagesRepository
-);
+// ✅ Luego services
+const orderService = new OrderService(orderRepository, itemRepository);
+const productService = new ProductService(productRepository, productImagesRepository);
 
-const n8nProductController = new N8NProductController(
-  productService
-);
+// ✅ Luego controllers (ahora productService ya existe)
+const orderController = new OrderController(orderService);
+const n8nOrderController = new N8NOrderController(orderService, productService);
+const n8nProductController = new N8NProductController(productService);
 
-router.get(
-  "/products",
-  n8nProductController.getProducts
-);
-
-router.post(
-  "/orders",
-  orderController.create
-);
+// ✅ Rutas
+router.get("/products", n8nProductController.getProducts);
+router.post("/orders", orderController.create);
+router.post("/whatsapp/orders", n8nOrderController.createWhatsappOrder);
 
 export default router;
