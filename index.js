@@ -40,6 +40,9 @@ import { PassportLocalAuthService } from "./src/auth/local/application/PassportL
 import { ACCEPTED_ORIGINS } from "./src/shared/access.js";
 import { DatabaseUserRepository } from "./src/auth/local/infrastructure/adapters/DatabaseUserRepository.js";
 import { salesRoutes } from "./src/sales/infrastructure/routes/salesRoutes.js";
+import { analyticsRoutes } from "./src/analytics/infrastructure/routes/analyticsRoutes.js";
+import { alertsRoutes } from "./src/alerts/infrastructure/routes/alertsRoutes.js"
+
 
 // Capturar errores globales para debug
 process.on('uncaughtException', (err) => {
@@ -95,6 +98,8 @@ app.use("/api", routerOrders);
 app.use("/api", routerProducts);
 app.use("/api", routerItems);
 app.use("/api/sales", salesRoutes)
+app.use("/api/analytics", analyticsRoutes)
+app.use("/api/alerts", alertsRoutes)
 
 // Store routes
 app.use("/store", cors(corsObject), routerStoreProducts);
