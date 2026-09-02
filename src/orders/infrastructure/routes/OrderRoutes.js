@@ -16,7 +16,7 @@ routerOrders.use(AuthMiddleware.ensureAuthenticated);
 const orderRepository = new DatabaseOrderRepository();
 const itemRepository = new DatabaseItemRepository();
 const orderService = new OrderService(orderRepository, itemRepository);
-const orderController = new OrderController(orderService);
+const orderController = new OrderController(orderService, "pos"); // Aquí se define el source como "pos" para el dashboard  
 
 // Rutas
 routerOrders.get("/orders", orderController.getAll);

@@ -1,5 +1,5 @@
 export class Order {
-  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, paidAt, deliveryAddress }) {
+  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, paidAt, deliveryAddress, source }) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
@@ -11,7 +11,8 @@ export class Order {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.paymentInfo = paymentInfo;
-    this.deliveryType = deliveryType
+    this.deliveryType = deliveryType;
+    this.source = source || "other";
   }
 
   // FACTORY METHODS
@@ -27,7 +28,8 @@ export class Order {
       paidAt: dbRecord.paid_at,
       paymentInfo: dbRecord.payment_info,
       deliveryType: dbRecord.delivery_type,
-      deliveryAddress: dbRecord.delivery_address
+      deliveryAddress: dbRecord.delivery_address,
+      source: dbRecord.source
     });
   }
 
@@ -43,7 +45,8 @@ export class Order {
       createdAt: dto.createdAt,
       paymentInfo: dto.paymentInfo,
       deliveryType:dto.deliveryType,
-      deliveryAddress: dto.deliveryAddress
+      deliveryAddress: dto.deliveryAddress,
+      source: dto.source
     });
   }
 
@@ -80,7 +83,8 @@ export class Order {
       updatedAt: this.updatedAt,
       paymentInfo: this.paymentInfo,
       deliveryType: this.deliveryType,
-      deliveryAddress: this.deliveryAddress
+      deliveryAddress: this.deliveryAddress,
+      source: this.source
     };
   }
 
@@ -94,7 +98,8 @@ export class Order {
       created_at: this.createdAt,
       payment_info: this.paymentInfo,
       delivery_type: this.deliveryType,
-      delivery_address: this.deliveryAddress
+      delivery_address: this.deliveryAddress,
+      source: this.source
     };
   }
 
@@ -110,7 +115,8 @@ export class Order {
       status: this.status,
       payment_info: this.paymentInfo,
       delivery_type: this.deliveryType,
-      delivery_address: this.deliveryAddress
+      delivery_address: this.deliveryAddress,
+      source: this.source
     };
   }
 

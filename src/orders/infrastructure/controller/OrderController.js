@@ -8,8 +8,12 @@ import {
 import { getIO } from "../../../config/socket.js";
 
 export class OrderController {
-  constructor(orderService) {
+  // `defaultSource` lo fija quien instancia el controller según la ruta
+  // que lo monta (dashboard -> "pos", store -> "app"). Nunca debe salir
+  // del body del request.
+  constructor(orderService, defaultSource = "other") {
     this.orderService = orderService;
+    this.defaultSource = defaultSource;
   }
 
   getAll = async (req, res) => {
@@ -46,7 +50,7 @@ export class OrderController {
         });
       }
       
-      const order = await this.orderService.createOrder(validation.data);
+      const order = await this.orderService.createOrder(validation.data, this.defaultSource);
       
       getIO().emit("order:new", order);
 

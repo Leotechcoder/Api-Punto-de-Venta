@@ -14,7 +14,7 @@ routerOrdersStore.use(AccessControl.corsHandler);
 const orderRepository = new DatabaseOrderRepository();
 const itemRepository = new DatabaseItemRepository();
 const orderService = new OrderService(orderRepository, itemRepository);
-const orderController = new OrderController(orderService);
+const orderController = new OrderController(orderService, "app"); // Aquí se define el source como "app" para la tienda
 
 // Rutas
 routerOrdersStore.get("/orders", orderController.getAll);

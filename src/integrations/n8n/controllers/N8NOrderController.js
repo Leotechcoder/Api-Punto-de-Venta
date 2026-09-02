@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 export class N8NOrderController {
   constructor(orderService, productService) {
     this.orderService = orderService;
@@ -53,8 +55,11 @@ export class N8NOrderController {
         deliveryAddress: delivery_address,
       };
 
+      // El origen es fijo para este controller: siempre WhatsApp.
+      // No depende de nada que mande el bot en el body.
       const order = await this.orderService.createOrder(
-        orderDTO
+        orderDTO,
+        "whatsapp"
       );
 
       return res.status(201).json({

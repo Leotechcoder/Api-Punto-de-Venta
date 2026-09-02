@@ -22,12 +22,15 @@ export class OrderService {
     return Order.fromPersistence(dbOrder).toDTO();
   }
 
-  async createOrder(orderDTO) {
+  // ⚠️ `source` NUNCA debe venir del body del cliente: lo determina el
+  // propio backend según qué ruta/controller invocó la creación
+  // (dashboard = "pos", store = "app", n8n whatsapp = "whatsapp").
+  async createOrder(orderDTO, source = "other") {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
-      const orderPersistence = Order.fromDTO(orderDTO).toPersistenceForCreate();
+      const orderPersistence = Order.fromDTO({ ...orderDTO, source }).toPersistenceForCreate();
 
       const savedOrder = await this.orderRepository.create(
         orderPersistence,
@@ -154,7 +157,6 @@ export class OrderService {
 
   async updateItemInOrder(orderId, itemId, updateFields) {
     const client = await pool.connect();
-    console.log(updateFields);
 
     try {
       await client.query("BEGIN");
@@ -174,7 +176,6 @@ export class OrderService {
 
       const updateFieldsRef =
         Item.fromDTO(updateFields).toPersistenceForUpdate();
-      console.log(updateFieldsRef);
 
       const updatedItem = await this.itemRepository.updateFields(
         itemId,
