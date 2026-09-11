@@ -38,7 +38,7 @@ export class OrderController {
     try {
       // ✅ Validación con Zod
       const validation = validateOrder(req.body);
-      
+
       if (!validation.success) {
         console.log("Validation errors:", validation.error.errors);
         return res.status(400).json({
@@ -49,9 +49,9 @@ export class OrderController {
           })),
         });
       }
-      
+
       const order = await this.orderService.createOrder(validation.data, this.defaultSource);
-      
+
       getIO().emit("order:new", order);
 
       res.status(201).json({ order, message: "Orden creada correctamente 🤘" });
@@ -61,11 +61,14 @@ export class OrderController {
     }
   };
 
+  // PATCH /orders/:id — único endpoint para edición completa (estado, pago
+  // y, opcionalmente, sincronización de items). `totalAmount` no forma
+  // parte del contrato: el schema de update lo excluye y el servicio
+  // siempre lo recalcula si vinieron items.
   updateOrder = async (req, res) => {
     try {
       const { id } = req.params;
 
-      // ✅ Validar datos parcialmente (solo campos enviados)
       const validation = validateOrderUpdate(req.body);
       if (!validation.success) {
         return res.status(400).json({
@@ -74,14 +77,13 @@ export class OrderController {
         });
       }
 
-      const updatedOrder = await this.orderService.updateOrder(
-        id,
-        validation.data
-      );
+      const updatedOrder = await this.orderService.updateOrder(id, validation.data);
 
       if (!updatedOrder) {
         return res.status(404).json({ message: "Orden no encontrada 🤔" });
       }
+
+      getIO().emit("order:updated", updatedOrder);
 
       res.status(200).json({
         order: updatedOrder,
@@ -89,6 +91,20 @@ export class OrderController {
       });
     } catch (err) {
       console.error("❌ Error en updateOrder:", err);
+
+      if (err.message === "Order not found") {
+        return res.status(404).json({ error: err.message });
+      }
+      // Conflicto de estado: se intentó tocar items de una orden que ya
+      // no está pending (ready-to-pay/paid/cancelled).
+      if (err.code === "ORDER_NOT_EDITABLE") {
+        return res.status(409).json({ error: err.message });
+      }
+      // Se mandó `items: []` — no se permite vaciar una orden por acá.
+      if (err.code === "ORDER_EMPTY_ITEMS") {
+        return res.status(400).json({ error: err.message });
+      }
+
       res.status(500).json({ error: err.message });
     }
   };

@@ -1,5 +1,5 @@
 export class Order {
-  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, paidAt, deliveryAddress, source }) {
+  constructor({ id, userId, userName, totalAmount, status, items, createdAt, updatedAt, paymentInfo, deliveryType, paidAt, deliveryAddress, source, tableId }) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
@@ -11,6 +11,7 @@ export class Order {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.paymentInfo = paymentInfo;
+    this.tableId = tableId || null;
     this.deliveryType = deliveryType;
     this.source = source || "other";
   }
@@ -29,7 +30,8 @@ export class Order {
       paymentInfo: dbRecord.payment_info,
       deliveryType: dbRecord.delivery_type,
       deliveryAddress: dbRecord.delivery_address,
-      source: dbRecord.source
+      source: dbRecord.source,
+      tableId: dbRecord.table_id
     });
   }
 
@@ -44,8 +46,9 @@ export class Order {
       items: dto.items,
       createdAt: dto.createdAt,
       paymentInfo: dto.paymentInfo,
-      deliveryType:dto.deliveryType,
+      deliveryType: dto.deliveryType,
       deliveryAddress: dto.deliveryAddress,
+      tableId: dto.tableId,
       source: dto.source
     });
   }
@@ -55,11 +58,6 @@ export class Order {
     const valid = ["pending", "paid", "cancelled", "completed"];
     if (!valid.includes(newStatus)) throw new Error("Invalid order status");
     this.status = newStatus;
-  }
-
-  updateTotal(newTotal) {
-    if (newTotal < 0) throw new Error("Total amount cannot be negative");
-    this.totalAmount = newTotal;
   }
 
   addItem(itemId) {
@@ -84,7 +82,8 @@ export class Order {
       paymentInfo: this.paymentInfo,
       deliveryType: this.deliveryType,
       deliveryAddress: this.deliveryAddress,
-      source: this.source
+      source: this.source,
+      tableId: this.tableId
     };
   }
 
@@ -99,11 +98,12 @@ export class Order {
       payment_info: this.paymentInfo,
       delivery_type: this.deliveryType,
       delivery_address: this.deliveryAddress,
-      source: this.source
+      source: this.source,
+      table_id: this.tableId
     };
   }
 
-   /**
+  /**
    * Prepara los datos para crear una nueva orden en la base de datos.
    * No incluye `id_` ni `created_at` porque esos los genera el repositorio.
    */
@@ -116,16 +116,31 @@ export class Order {
       payment_info: this.paymentInfo,
       delivery_type: this.deliveryType,
       delivery_address: this.deliveryAddress,
-      source: this.source
+      source: this.source,
+      table_id: this.tableId
     };
   }
 
-  toPersistenceForUpdate(){
-    return {
-      status: this.status,
-      total_amount: this.totalAmount,
-      paid_at: this.paidAt,
-      payment_info: this.paymentInfo, 
-    };
+  /**
+   * Update parcial: solo mete en el UPDATE los campos que realmente vinieron
+   * en el DTO. `total_amount` NUNCA aparece acá — es un valor derivado de
+   * order_items y solo OrderService puede setearlo, tras recalcularlo.
+   */
+  toPersistenceForUpdate() {
+    const data = {};
+
+    if (this.status !== undefined) {
+      data.status = this.status;
+    }
+
+    if (this.paidAt !== undefined) {
+      data.paid_at = this.paidAt;
+    }
+
+    if (this.paymentInfo !== undefined) {
+      data.payment_info = this.paymentInfo;
+    }
+
+    return data;
   }
 }

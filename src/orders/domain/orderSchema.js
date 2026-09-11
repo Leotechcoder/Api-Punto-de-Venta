@@ -1,7 +1,7 @@
 import z from "zod";
 
 // =========================
-// 📦 Schema para items de la orden
+// 📦 Schema para items de la orden (creación de orden completa)
 // =========================
 const itemSchema = z.object({
   id: z.string().min(1, "El ID del item es obligatorio"),
@@ -15,6 +15,9 @@ const itemSchema = z.object({
   quantity: z.number().min(1, "La cantidad debe ser al menos 1")
 });
 
+// Variante para PATCH /orders/:id → un item sin `id` es un item nuevo
+const itemSyncSchema = itemSchema.partial({ id: true });
+
 // =========================
 // 💰 Subschema: Montos de pago
 // =========================
@@ -24,14 +27,12 @@ const paymentAmountsSchema = z.object({
   debito: z.string().optional(),
 });
 
-// ✅ Subschema principal de paymentInfo (acepta vacío)
 const paymentInfoSchema = z.object({
   methods: z.array(z.enum(["efectivo", "credito", "debito"])).optional(),
   amounts: paymentAmountsSchema.optional(),
 })
 .refine(
   (p) => {
-    // Si no existe o está completamente vacío → OK
     if (
       !p ||
       (!p.methods && !p.amounts) ||
@@ -40,13 +41,10 @@ const paymentInfoSchema = z.object({
     ) {
       return true;
     }
-
-    // Si tiene algo, debe tener al menos un método o monto válido
     const hasMethods = Array.isArray(p.methods) && p.methods.length > 0;
     const hasAmounts =
       p.amounts &&
       Object.values(p.amounts).some(v => v !== undefined && v !== "");
-
     return hasMethods || hasAmounts;
   },
   { message: "Debe especificarse al menos un método o monto si se envía paymentInfo" }
@@ -54,7 +52,7 @@ const paymentInfoSchema = z.object({
 .optional();
 
 // =========================
-// 🧾 Schema principal de la orden
+// 🧾 Schema principal de la orden (POST /orders)
 // =========================
 export const orderSchema = z.object({
   userId: z.string().min(3, "El ID del usuario es obligatorio"),
@@ -69,12 +67,21 @@ export const orderSchema = z.object({
   paidAt: z.string().optional(),
   deliveryType: z.string().min(3, "El tipo de entrega es obligatorio"),
   deliveryAddress: z.string().optional(),
+  tableId: z.string().optional(),
 });
 
 // =========================
-// ✏️ Schema parcial para updates
+// ✏️ Schema para PATCH /orders/:id
 // =========================
-export const orderSchemaUpdate = orderSchema.partial();
+// `totalAmount` queda afuera a propósito: es un valor derivado de
+// order_items, el cliente nunca puede setearlo. `items`, si viene, usa
+// itemSyncSchema (id opcional = item nuevo).
+export const orderSchemaUpdate = orderSchema
+  .omit({ totalAmount: true, items: true })
+  .partial()
+  .extend({
+    items: z.array(itemSyncSchema).optional(),
+  });
 
 // =========================
 // 🧩 Funciones de validación seguras

@@ -42,6 +42,7 @@ import { DatabaseUserRepository } from "./src/auth/local/infrastructure/adapters
 import { salesRoutes } from "./src/sales/infrastructure/routes/salesRoutes.js";
 import { analyticsRoutes } from "./src/analytics/infrastructure/routes/analyticsRoutes.js";
 import { alertsRoutes } from "./src/alerts/infrastructure/routes/alertsRoutes.js"
+import routerTables from "./src/tables/infrastructure/routes/TableRoutes.js";
 
 
 // Capturar errores globales para debug
@@ -100,7 +101,7 @@ app.use("/api", routerItems);
 app.use("/api/sales", salesRoutes)
 app.use("/api/analytics", analyticsRoutes)
 app.use("/api/alerts", alertsRoutes)
-
+app.use("/api/tables", routerTables)
 // Store routes
 app.use("/store", cors(corsObject), routerStoreProducts);
 app.use("/store", cors(corsObject), routerOrdersStore);

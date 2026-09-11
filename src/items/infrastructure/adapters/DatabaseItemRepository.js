@@ -16,11 +16,19 @@ export class DatabaseItemRepository extends ItemRepository {
     return result.rows[0] || null;
   }
 
-  async createForOrder(orderId, items, client) {
-    // Asegurarse de que siempre sea un array
-    const itemsArray = Array.isArray(items) ? items : [items];
+  // Usado por el sync de PATCH /orders/:id para comparar estado actual vs recibido.
+  async getByOrderId(orderId, client) {
+    const result = await client.query(
+      "SELECT * FROM public.order_items WHERE order_id = $1",
+      [orderId]
+    );
+    return result.rows;
+  }
 
-    // Generar los valores dinámicos
+  async createForOrder(orderId, items, client) {
+    const itemsArray = Array.isArray(items) ? items : [items];
+    if (!itemsArray.length) return [];
+
     const values = [];
     const placeholders = [];
 
@@ -53,27 +61,42 @@ export class DatabaseItemRepository extends ItemRepository {
   `;
 
     const result = await client.query(query, values);
-    return result.rows; // devuelve un array de items insertados
+    return result.rows;
   }
 
-  async updateFields(itemId, { description, quantity }, client) {
-  const q = `
-    UPDATE public.order_items
-    SET 
-      description = $1,
-      quantity = $2
-    WHERE id_ = $3
-    RETURNING *;
-  `;
-  const values = [description, quantity, itemId];
-  const result = await client.query(q, values);
-  return result.rows[0] || null;
-}
+  // ⚠️ Antes solo persistía description/quantity. El sync de PATCH /orders/:id
+  // también puede necesitar actualizar unit_price (ej: cambió el precio del
+  // producto entre que se agregó y se guardó la orden), así que se agrega acá.
+  async updateFields(itemId, { description, quantity, unit_price }, client) {
+    const q = `
+      UPDATE public.order_items
+      SET 
+        description = $1,
+        quantity = $2,
+        unit_price = $3
+      WHERE id_ = $4
+      RETURNING *;
+    `;
+    const values = [description, quantity, unit_price, itemId];
+    const result = await client.query(q, values);
+    return result.rows[0] || null;
+  }
 
   async delete(itemId, client) {
     await client.query(`DELETE FROM public.order_items WHERE id_ = $1`, [
       itemId,
     ]);
     return true;
+  }
+
+  // Usado por el sync para borrar en un solo query los items que ya no
+  // están en la lista recibida, en vez de un DELETE por cada uno.
+  async deleteMany(ids, client) {
+    if (!ids?.length) return 0;
+    const result = await client.query(
+      `DELETE FROM public.order_items WHERE id_ = ANY($1::text[])`,
+      [ids]
+    );
+    return result.rowCount;
   }
 }

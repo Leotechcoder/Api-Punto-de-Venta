@@ -1,4 +1,4 @@
-// src/modules/orders/infrastructure/DatabaseOrderRepository.js
+
 import { OrderRepository } from "../../application/OrderRepository.js";
 import { idGenerator } from "../../../shared/idGenerator.js";
 
