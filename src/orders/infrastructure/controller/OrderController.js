@@ -66,10 +66,12 @@ export class OrderController {
   // parte del contrato: el schema de update lo excluye y el servicio
   // siempre lo recalcula si vinieron items.
   updateOrder = async (req, res) => {
+    console.log("updateOrder called with body:", req.body);
     try {
       const { id } = req.params;
 
       const validation = validateOrderUpdate(req.body);
+      console.log("Validation result:", validation);
       if (!validation.success) {
         return res.status(400).json({
           error: "Datos inválidos para la actualización de la orden",

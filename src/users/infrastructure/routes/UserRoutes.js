@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../controller/UserController.js";
 import { UserService } from "../../application/UserService.js";
-import { DatabaseUserRepository } from "../../infrastructure/adapters/DatabaseUserRepository.js";
+import { DatabaseUserRepository } from "../adapters/DatabaseUserRepository.js";
 import { AccessControl } from "../../../shared/accessControlV2.js";
 import { AuthMiddleware } from "../../../shared/middleware/authMiddlewareV2.js";
 

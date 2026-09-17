@@ -55,7 +55,7 @@ export class TableController {
       }
 
       const table = await this.tableService.createTable(validation.data);
-
+      
       res.status(201).json({
         table,
 
@@ -77,6 +77,7 @@ export class TableController {
   update = async (req, res) => {
     try {
       const validation = validateTableUpdate(req.body);
+      
 
       if (!validation.success) {
         return res.status(400).json({
