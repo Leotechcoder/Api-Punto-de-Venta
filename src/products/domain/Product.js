@@ -63,7 +63,7 @@ export class Product {
 
   // ---------- DOMINIO ----------
   updateInfo({
-    name,
+    name_,
     price,
     category,
     stock,
@@ -71,7 +71,7 @@ export class Product {
     available,
     bestSeller,
   }) {
-    if (name !== undefined) this.name = name;
+    if (name_ !== undefined) this.name = name_;
     if (price !== undefined && price >= 0) this.price = price;
     if (category !== undefined) this.category = category;
     if (stock !== undefined && stock >= 0) this.stock = stock;

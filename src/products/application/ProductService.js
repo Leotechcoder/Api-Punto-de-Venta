@@ -100,13 +100,14 @@ export class ProductService {
       if (!existing) return null;
 
       const product = Product.fromPersistence(existing);
+      
       product.updateInfo(data);
 
       const updatedRecord = await this.repository.update(
         id,
         product.toPersistenceForUpdate(),
         client
-      );
+      );      
 
       if (imagesToDelete?.length) {
         for (const imageId of imagesToDelete) {

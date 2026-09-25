@@ -42,7 +42,7 @@ export class ProductController {
       const files = req.files || [];
 
       const productData = {
-        name: body.name,
+        name_: body.name,
         price: Number(body.price),
         category: body.category,
         stock: Number(body.stock),
@@ -83,7 +83,6 @@ export class ProductController {
     try {
       const id = req.params.id;
       const body = req.body;
-      console.log('body:', body);
 
       if (typeof body.available === "string") {
         body.available = body.available === "true";
@@ -99,7 +98,7 @@ export class ProductController {
       };
       
       const validation = validateProductUpdate(updatedData);
-      console.log('validation:', validation);
+      
       if (!validation.success) {
         return res.status(400).json({
           message: "Datos inválidos",
