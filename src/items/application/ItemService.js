@@ -20,7 +20,10 @@ export class ItemService {
   // Lectura: devuelve DTOs amigables al frontend
   async getAllItems() {
     const rows = await this.itemRepository.getAll(pool);
-    return rows.map(Item.fromPersistence).map((i) => i.toDTO());
+    
+    const respuesta = rows.map(Item.fromPersistence).map((i) => i.toDTO());
+    console.log('respuesta', respuesta);
+    return respuesta
   }
 
   async getItemById(id) {

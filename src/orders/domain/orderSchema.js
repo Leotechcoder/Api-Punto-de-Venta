@@ -7,12 +7,18 @@ const itemSchema = z.object({
   id: z.string().min(1, "El ID del item es obligatorio"),
   productId: z.string().min(1, "El ID del producto es obligatorio"),
   productName: z.string().min(1, "El nombre del producto es obligatorio"),
-  description: z.string().optional(),
   unitPrice: z.union([
     z.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "El precio unitario debe ser un número válido y no negativo"),
     z.number().nonnegative("El precio unitario no puede ser negativo")
   ]),
-  quantity: z.number().min(1, "La cantidad debe ser al menos 1")
+  quantity: z.number().min(1, "La cantidad debe ser al menos 1"),
+  // Configuración específica del producto
+    size: z.string().optional(),
+    pizzaType: z.string().optional(),
+    additionalComments: z.string().optional(),
+
+  // Extras seleccionados
+    extras: z.array(z.string()).optional(),
 });
 
 // Variante para PATCH /orders/:id → un item sin `id` es un item nuevo

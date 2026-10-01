@@ -7,9 +7,12 @@ export const schemaItem = z.object({
   orderId: z.string().optional(), // lo maneja el backend normalmente
   productId: z.string().optional(),
   productName: z.string().optional(),
-  description: z.string().optional(),
   unitPrice: z.number().nonnegative().optional(),
   quantity: z.number().int().nonnegative().optional(),
+  size: z.string().optional(),
+  pizzaType: z.string().optional(),
+  additionalComments: z.string().optional(),
+  extras: z.array(z.string()).optional(),
 });
 
 /**

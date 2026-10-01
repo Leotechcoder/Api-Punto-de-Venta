@@ -1,4 +1,4 @@
-// src/modules/items/infrastructure/DatabaseItemRepository.js
+
 import { ItemRepository } from "../../application/ItemRepository.js";
 import { idGenerator } from "../../../shared/idGenerator.js";
 
@@ -34,28 +34,31 @@ export class DatabaseItemRepository extends ItemRepository {
 
     itemsArray.forEach((item, index) => {
       const itemId = idGenerator("Items");
-      const baseIndex = index * 7;
+      const baseIndex = index * 9;
 
       placeholders.push(
-        `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${
-          baseIndex + 4
-        }, $${baseIndex + 5}, $${baseIndex + 6}, $${baseIndex + 7})`
+        `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4}, 
+        $${baseIndex + 5}, $${baseIndex + 6}, $${baseIndex + 7}, 
+        $${baseIndex + 8}, $${baseIndex + 9})`
       );
 
+      //deberia usar una entidad de dominio para convertir a snake_case, pero por ahora lo hago manualmente
       values.push(
         itemId,
         orderId,
         item.product_id,
         item.product_name,
-        item.description,
         item.quantity,
-        item.unit_price
+        item.unit_price,
+        item.size || null,
+        item.pizza_type || null,
+        item.additional_comments || null,
       );
     });
 
     const query = `
     INSERT INTO public.order_items 
-      (id_, order_id, product_id, product_name, description, quantity, unit_price)
+      (id_, order_id, product_id, product_name, quantity, unit_price, size, pizza_type, additional_comments)
     VALUES ${placeholders.join(", ")}
     RETURNING *;
   `;

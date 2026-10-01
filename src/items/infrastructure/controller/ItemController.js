@@ -21,6 +21,7 @@ export class ItemController {
   async getAll(req, res) {
     try {
       const items = await this.itemService.getAllItems();
+      
       return res.status(200).json({ items, message: "OK" });
     } catch (error) {
       return res.status(500).json({ error: error.message });

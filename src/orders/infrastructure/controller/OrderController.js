@@ -37,6 +37,7 @@ export class OrderController {
   create = async (req, res) => {
     try {
       // ✅ Validación con Zod
+      
       const validation = validateOrder(req.body);
 
       if (!validation.success) {
@@ -56,7 +57,6 @@ export class OrderController {
 
       res.status(201).json({ order, message: "Orden creada correctamente 🤘" });
     } catch (err) {
-      console.error("Error creating order:", err);
       res.status(400).json({ error: err.message });
     }
   };

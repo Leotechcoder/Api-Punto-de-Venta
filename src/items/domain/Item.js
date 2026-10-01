@@ -6,14 +6,16 @@
  */
 
 export class Item {
-  constructor({ id_, order_id, product_id, product_name, description, unit_price, quantity }) {
+  constructor({ id_, order_id, product_id, product_name, unit_price, quantity, size, pizza_type, additional_comments }) {
     this.id_ = id_;
     this.order_id = order_id;
     this.product_id = product_id;
     this.product_name = product_name;
-    this.description = description;
     this.unit_price = unit_price;
     this.quantity = quantity;
+    this.size = size;
+    this.pizza_type = pizza_type;
+    this.additional_comments = additional_comments;
   }
 
   // Factory desde registro DB (snake_case)
@@ -24,10 +26,13 @@ export class Item {
       order_id: dbRecord.order_id,
       product_id: dbRecord.product_id,
       product_name: dbRecord.product_name,
-      description: dbRecord.description,
       unit_price: dbRecord.unit_price,
       quantity: dbRecord.quantity,
+      size: dbRecord.size,
+      pizza_type: dbRecord.pizza_type,
+      additional_comments: dbRecord.additional_comments,
     });
+  
   }
 
   // Factory desde DTO (frontend -> camelCase)
@@ -37,9 +42,11 @@ export class Item {
       id_: dto.id_ || dto.id,
       product_id: dto.productId || dto.product_id,
       product_name: dto.productName || dto.product_name,
-      description: dto.description,
       unit_price: dto.unitPrice || dto.unit_price,
       quantity: dto.quantity,
+      size: dto.size,
+      pizza_type: dto.pizzaType || dto.pizza_type,
+      additional_comments: dto.additionalComments || dto.additional_comments,
     });
   }
 
@@ -60,7 +67,9 @@ export class Item {
     if (fields.quantity !== undefined) this.updateQuantity(fields.quantity);
     if (fields.unit_price !== undefined) this.updatePrice(fields.unit_price);
     if (fields.product_name !== undefined) this.product_name = fields.product_name;
-    if (fields.description !== undefined) this.description = fields.description;
+    if (fields.size !== undefined) this.size = fields.size;
+    if (fields.pizza_type !== undefined) this.pizza_type = fields.pizza_type;
+    if (fields.additional_comments !== undefined) this.additional_comments = fields.additional_comments;
   }
 
   // Serializadores
@@ -70,9 +79,11 @@ export class Item {
       orderId: this.order_id,
       productId: this.product_id,
       productName: this.product_name,
-      description: this.description,
       unitPrice: this.unit_price,
       quantity: this.quantity,
+      size: this.size,
+      pizzaType: this.pizza_type,
+      additionalComments: this.additional_comments,
     };
   }
 
@@ -82,9 +93,11 @@ export class Item {
       order_id: this.order_id,
       product_id: this.product_id,
       product_name: this.product_name,
-      description: this.description,
       unit_price: this.unit_price,
       quantity: this.quantity,
+      size: this.size,
+      pizza_type: this.pizza_type,
+      additional_comments: this.additional_comments,
     };
   }
 
@@ -92,17 +105,21 @@ export class Item {
     return {
       product_id: this.product_id,
       product_name: this.product_name,
-      description: this.description,
       unit_price: this.unit_price,
       quantity: this.quantity,
+      size: this.size,
+      pizza_type: this.pizza_type,
+      additional_comments: this.additional_comments,
     };
   }
 
   toPersistenceForUpdate() {
     const fields = {};
-    if (this.description !== undefined) fields.description = this.description;
     if (this.unit_price !== undefined) fields.unit_price = this.unit_price;
     if (this.quantity !== undefined) fields.quantity = this.quantity;
+    if (this.size !== undefined) fields.size = this.size;
+    if (this.pizza_type !== undefined) fields.pizza_type = this.pizza_type;
+    if (this.additional_comments !== undefined) fields.additional_comments = this.additional_comments;undefined;
     return fields;
   }
 }
